@@ -36,6 +36,7 @@ import org.linphone.core.CoreListenerStub
 import org.linphone.core.tools.Log
 import org.linphone.utils.LinphoneUtils
 import androidx.core.net.toUri
+import org.linphone.compatibility.Compatibility
 
 class TelecomManager
     @WorkerThread
@@ -69,13 +70,13 @@ class TelecomManager
         }
     }
 
-    private val hasTelecomFeature = context.packageManager.hasSystemFeature("android.software.telecom")
+    private val hasTelecomFeature = Compatibility.hasTelecomManagerFeature(context)
 
     private var currentlyFollowedCalls: Int = 0
 
     init {
         Log.i(
-            "$TAG android.software.telecom feature is [${if (hasTelecomFeature) "available" else "not available"}]"
+            "$TAG Feature is [${if (hasTelecomFeature) "available" else "not available"}]"
         )
         try {
             callsManager.registerAppWithTelecom(
