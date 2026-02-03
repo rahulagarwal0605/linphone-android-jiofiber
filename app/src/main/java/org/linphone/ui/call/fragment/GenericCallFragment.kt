@@ -20,6 +20,7 @@
 package org.linphone.ui.call.fragment
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
@@ -49,6 +50,7 @@ abstract class GenericCallFragment : GenericFragment() {
             MotionEvent.ACTION_UP -> {
                 sharedViewModel.videoPreviewX = view.x
                 sharedViewModel.videoPreviewY = view.y
+                sharedViewModel.videoPreviewOrientation = resources.configuration.orientation
                 true
             }
             MotionEvent.ACTION_MOVE -> {
@@ -82,10 +84,13 @@ abstract class GenericCallFragment : GenericFragment() {
         }
 
         // To restore video preview position if possible
-        if (sharedViewModel.videoPreviewX != 0f && sharedViewModel.videoPreviewY != 0f) {
-            Log.i("$TAG Restoring video preview position with position X [${sharedViewModel.videoPreviewX}] and Y [${sharedViewModel.videoPreviewY}]")
-            localPreviewVideoSurface.x = sharedViewModel.videoPreviewX
-            localPreviewVideoSurface.y = sharedViewModel.videoPreviewY
+        val currentOrientation = resources.configuration.orientation
+        if (sharedViewModel.videoPreviewOrientation == currentOrientation || sharedViewModel.videoPreviewOrientation == Configuration.ORIENTATION_UNDEFINED) {
+            if (sharedViewModel.videoPreviewX != 0f && sharedViewModel.videoPreviewY != 0f) {
+                Log.i("$TAG Restoring video preview position with position X [${sharedViewModel.videoPreviewX}] and Y [${sharedViewModel.videoPreviewY}]")
+                localPreviewVideoSurface.x = sharedViewModel.videoPreviewX
+                localPreviewVideoSurface.y = sharedViewModel.videoPreviewY
+            }
         }
 
         localPreviewVideoSurface.setOnTouchListener(videoPreviewTouchListener)
