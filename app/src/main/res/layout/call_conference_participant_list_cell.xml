@@ -22,8 +22,6 @@
         android:onContextClick="@{onLongClickListener}"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:background="@drawable/primary_cell_background">
 
         <include
@@ -60,6 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:layout_marginEnd="16dp"
             android:text="@string/conversation_info_participant_is_admin_label"
             android:textSize="12sp"
             android:textColor="?attr/color_main2_400"
@@ -99,6 +98,7 @@
             android:layout_width="@dimen/icon_size"
             android:layout_height="@dimen/icon_size"
             android:layout_marginStart="10dp"
+            android:layout_marginEnd="16dp"
             android:src="@drawable/x"
             android:contentDescription="@string/content_description_click_to_remove_participant"
             android:visibility="@{model.isMeAdmin ? (model.isMyself ? View.INVISIBLE : View.VISIBLE) : View.GONE, default=gone}"

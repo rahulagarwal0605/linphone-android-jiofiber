@@ -22,15 +22,13 @@
         android:onContextClick="@{onLongClickListener}"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:background="@drawable/primary_cell_background">
 
         <include
             android:id="@+id/avatar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             layout="@layout/contact_avatar"
@@ -55,7 +53,7 @@
             android:id="@+id/call_state_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_marginEnd="5dp"
+            android:layout_marginEnd="16dp"
             android:contentDescription="@null"
             android:src="@{model.isPaused ? @drawable/phone_pause : @drawable/phone_call, default=@drawable/phone_pause}"
             app:tint="?attr/color_main2_500"
