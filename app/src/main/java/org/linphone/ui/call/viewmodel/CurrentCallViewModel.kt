@@ -1341,19 +1341,22 @@ class CurrentCallViewModel
                 delay(1000)
                 coreContext.postOnCoreThread {
                     if (::currentCall.isInitialized) {
-                        val quality = currentCall.currentQuality
-                        val icon = when {
-                            quality >= 4 -> R.drawable.cell_signal_full
-                            quality >= 3 -> R.drawable.cell_signal_high
-                            quality >= 2 -> R.drawable.cell_signal_medium
-                            quality >= 1 -> R.drawable.cell_signal_low
-                            else -> R.drawable.cell_signal_none
-                        }
-                        qualityValue.postValue(quality)
-                        qualityIcon.postValue(icon)
-                    }
+                        val state = currentCall.state
+                        if (!LinphoneUtils.isCallEnding(state, true)) {
+                            val quality = currentCall.currentQuality
+                            val icon = when {
+                                quality >= 4 -> R.drawable.cell_signal_full
+                                quality >= 3 -> R.drawable.cell_signal_high
+                                quality >= 2 -> R.drawable.cell_signal_medium
+                                quality >= 1 -> R.drawable.cell_signal_low
+                                else -> R.drawable.cell_signal_none
+                            }
+                            qualityValue.postValue(quality)
+                            qualityIcon.postValue(icon)
 
-                    updateCallQualityIcon()
+                            updateCallQualityIcon()
+                        }
+                    }
                 }
             }
         }
