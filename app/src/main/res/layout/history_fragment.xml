@@ -83,67 +83,82 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <include
-                        android:id="@+id/avatar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        layout="@layout/contact_avatar_big"
-                        bind:model="@{viewModel.callLogModel.avatarModel}"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/default_text_style"
-                        android:id="@+id/name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:text="@{viewModel.callLogModel.avatarModel.name, default=`John Doe`}"
-                        android:textColor="?attr/color_main2_800"
-                        android:textSize="14sp"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/avatar" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/default_text_style"
-                        android:id="@+id/address"
-                        android:onClick="@{copyPeerSipUriClickListener}"
-                        android:layout_width="wrap_content"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/avatar_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
-                        android:text="@{viewModel.callLogModel.displayedAddress, default=`+33601020304`}"
-                        android:textColor="?attr/color_main2_800"
-                        android:textSize="14sp"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:drawableEnd="@drawable/copy"
-                        android:drawablePadding="5dp"
-                        android:visibility="@{viewModel.isConferenceCallLog || viewModel.hideSipAddresses ? View.GONE : View.VISIBLE}"
-                        app:drawableTint="?attr/color_main2_600"
+                        android:layout_marginTop="20dp"
+                        android:paddingBottom="10dp"
+                        android:background="@drawable/shape_squircle_white_background"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/name" />
+                        app:layout_constraintTop_toTopOf="parent">
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/default_text_style_300"
-                        android:id="@+id/status"
-                        android:visibility="@{viewModel.callLogModel.avatarModel.presenceStatus == ConsolidatedPresence.Offline ? View.GONE : View.VISIBLE}"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{viewModel.callLogModel.avatarModel.lastPresenceInfo, default=@string/contact_presence_status_online}"
-                        android:textColor="@{viewModel.callLogModel.avatarModel.presenceStatus == ConsolidatedPresence.Online ? @color/success_500 : @color/warning_600, default=@color/success_500}"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/address" />
+                        <include
+                            android:id="@+id/avatar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            layout="@layout/contact_avatar_big"
+                            bind:model="@{viewModel.callLogModel.avatarModel}"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/default_text_style"
+                            android:id="@+id/name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:text="@{viewModel.callLogModel.avatarModel.name, default=`John Doe`}"
+                            android:textColor="?attr/color_main2_800"
+                            android:textSize="14sp"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/avatar" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/default_text_style"
+                            android:id="@+id/address"
+                            android:onClick="@{copyPeerSipUriClickListener}"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:text="@{viewModel.callLogModel.displayedAddress, default=`+33601020304`}"
+                            android:textColor="?attr/color_main2_800"
+                            android:textSize="14sp"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:drawableEnd="@drawable/copy"
+                            android:drawablePadding="5dp"
+                            android:visibility="@{viewModel.isConferenceCallLog || viewModel.hideSipAddresses ? View.GONE : View.VISIBLE}"
+                            app:drawableTint="?attr/color_main2_600"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/name" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/default_text_style_300"
+                            android:id="@+id/status"
+                            android:visibility="@{viewModel.callLogModel.avatarModel.presenceStatus == ConsolidatedPresence.Offline ? View.GONE : View.VISIBLE}"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{viewModel.callLogModel.avatarModel.lastPresenceInfo, default=@string/contact_presence_status_online}"
+                            android:textColor="@{viewModel.callLogModel.avatarModel.presenceStatus == ConsolidatedPresence.Online ? @color/success_500 : @color/warning_600, default=@color/success_500}"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/address"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/call_actions"
@@ -153,7 +168,7 @@
                         android:layout_marginEnd="16dp"
                         android:layout_marginTop="20dp"
                         android:background="@drawable/shape_squircle_white_background"
-                        app:layout_constraintTop_toBottomOf="@id/status"
+                        app:layout_constraintTop_toBottomOf="@id/avatar_content"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent">
 

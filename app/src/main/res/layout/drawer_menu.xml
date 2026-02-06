@@ -67,7 +67,7 @@
             android:adjustViewBounds="true"
             android:contentDescription="@string/content_description_close_drawer_menu"
             android:background="@drawable/circle_transparent_button_background"
-            app:drawableTint="?attr/color_main2_600"
+            app:tint="?attr/color_main2_600"
             app:layout_constraintTop_toTopOf="@id/brand_name"
             app:layout_constraintStart_toEndOf="@id/brand_name"
             app:layout_constraintBottom_toBottomOf="@id/brand_name"

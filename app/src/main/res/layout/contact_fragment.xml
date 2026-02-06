@@ -104,42 +104,58 @@
                         app:constraint_referenced_ids="trusted_devices_count, trusted_devices_progress, devices, trusted_devices_progress_label, trusted_devices_progress_background"
                         android:visibility="@{viewModel.showContactTrustAndDevices ? (viewModel.expandDevicesTrust &amp;&amp; viewModel.devices.size() > 0 ? View.VISIBLE : View.GONE) : View.GONE, default=gone}" />
 
-                    <include
-                        android:id="@+id/avatar"
-                        android:layout_width="wrap_content"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/avatar_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        layout="@layout/contact_avatar_big"
-                        bind:model="@{viewModel.contact}"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/shape_squircle_white_background"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent">
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/default_text_style"
-                        android:id="@+id/name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="@{viewModel.contact.name, default=`John Doe`}"
-                        android:textColor="?attr/color_main2_800"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/avatar" />
+                        <include
+                            android:id="@+id/avatar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            layout="@layout/contact_avatar_big"
+                            bind:model="@{viewModel.contact}"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/default_text_style_300"
-                        android:id="@+id/status"
-                        android:visibility="@{viewModel.contact.presenceStatus == ConsolidatedPresence.Offline ? View.GONE : View.VISIBLE}"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{viewModel.contact.lastPresenceInfo, default=@string/contact_presence_status_online}"
-                        android:textColor="@{viewModel.contact.presenceStatus == ConsolidatedPresence.Online ? @color/success_500 : @color/warning_600, default=@color/success_500}"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/name" />
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/default_text_style"
+                            android:id="@+id/name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="@{viewModel.contact.name, default=`John Doe`}"
+                            android:textColor="?attr/color_main2_800"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/avatar" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/default_text_style_300"
+                            android:id="@+id/status"
+                            android:visibility="@{viewModel.contact.presenceStatus == ConsolidatedPresence.Offline ? View.GONE : View.VISIBLE}"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:text="@{viewModel.contact.lastPresenceInfo, default=@string/contact_presence_status_online}"
+                            android:textColor="@{viewModel.contact.presenceStatus == ConsolidatedPresence.Online ? @color/success_500 : @color/warning_600, default=@color/success_500}"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/name"
+                            app:layout_constraintBottom_toBottomOf="parent"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/call_actions"
@@ -149,7 +165,7 @@
                         android:layout_marginEnd="16dp"
                         android:layout_marginTop="20dp"
                         android:background="@drawable/shape_squircle_white_background"
-                        app:layout_constraintTop_toBottomOf="@id/status"
+                        app:layout_constraintTop_toBottomOf="@id/avatar_content"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent">
 

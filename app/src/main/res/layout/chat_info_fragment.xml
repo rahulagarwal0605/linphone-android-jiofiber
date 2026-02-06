@@ -97,104 +97,119 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/screen_bottom_margin">
 
-                <include
-                    android:id="@+id/avatar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    layout="@layout/contact_avatar_big"
-                    bind:model="@{viewModel.avatarModel}"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/title"
-                    style="@style/default_text_style"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:text="@{viewModel.isGroup ? viewModel.subject : viewModel.avatarModel.name, default=`John Doe`}"
-                    android:textColor="?attr/color_main2_800"
-                    android:textSize="14sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/avatar" />
-
-                <ImageView
-                    android:id="@+id/edit_subject"
-                    android:layout_width="@dimen/large_icon_size"
-                    android:layout_height="@dimen/large_icon_size"
-                    android:layout_marginStart="3dp"
-                    android:onClick="@{editSubjectClickListener}"
-                    android:src="@drawable/pencil_simple"
-                    android:padding="5dp"
-                    android:background="@drawable/circle_transparent_button_background"
-                    android:contentDescription="@string/content_description_chat_edit_conversation_subject"
-                    android:visibility="@{!viewModel.isGroup || viewModel.isReadOnly || !viewModel.isMyselfAdmin ? View.GONE : View.VISIBLE}"
-                    app:tint="?attr/color_main2_600"
-                    app:layout_constraintBottom_toBottomOf="@id/title"
-                    app:layout_constraintStart_toEndOf="@id/title"
-                    app:layout_constraintTop_toTopOf="@id/title" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/address"
-                    style="@style/default_text_style"
-                    android:onClick="@{copySipUriClickListener}"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:text="@{viewModel.sipUri, default=`sip:john.doe@sip.example.org`}"
-                    android:textColor="?attr/color_main2_800"
-                    android:textSize="14sp"
-                    android:drawableEnd="@drawable/copy"
-                    android:drawablePadding="5dp"
-                    android:visibility="@{viewModel.isGroup || viewModel.hideSipAddresses ? View.GONE : View.VISIBLE, default=gone}"
-                    app:drawableTint="?attr/color_main2_600"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/title" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/peer_address"
-                    style="@style/default_text_style"
-                    android:onClick="@{copyPeerSipUriClickListener}"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/avatar_content"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
-                    android:ellipsize="end"
-                    android:maxLines="2"
-                    android:text="@{viewModel.peerSipUri, default=`sip:chatroom-xxxx@sip.example.org`}"
-                    android:textColor="?attr/color_main2_800"
-                    android:textSize="14sp"
-                    android:drawableEnd="@drawable/copy"
-                    android:drawablePadding="5dp"
-                    android:visibility="@{viewModel.showPeerSipUri &amp;&amp; !viewModel.hideSipAddresses ? View.VISIBLE : View.GONE, default=gone}"
-                    app:drawableTint="?attr/color_main2_600"
+                    android:layout_marginTop="20dp"
+                    android:paddingBottom="10dp"
+                    android:background="@drawable/shape_squircle_white_background"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/address" />
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/status"
-                    style="@style/default_text_style_300"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{viewModel.avatarModel.lastPresenceInfo, default=@string/contact_presence_status_online}"
-                    android:textColor="@{viewModel.avatarModel.presenceStatus == ConsolidatedPresence.Online ? @color/success_500 : @color/warning_600, default=@color/success_500}"
-                    android:textSize="14sp"
-                    android:visibility="@{viewModel.isGroup || viewModel.avatarModel.presenceStatus == ConsolidatedPresence.Offline ? View.GONE : View.VISIBLE, default=gone}"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/peer_address" />
+                    <include
+                        android:id="@+id/avatar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        layout="@layout/contact_avatar_big"
+                        bind:model="@{viewModel.avatarModel}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/title"
+                        style="@style/default_text_style"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="@{viewModel.isGroup ? viewModel.subject : viewModel.avatarModel.name, default=`John Doe`}"
+                        android:textColor="?attr/color_main2_800"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/avatar" />
+
+                    <ImageView
+                        android:id="@+id/edit_subject"
+                        android:layout_width="@dimen/large_icon_size"
+                        android:layout_height="@dimen/large_icon_size"
+                        android:layout_marginStart="3dp"
+                        android:onClick="@{editSubjectClickListener}"
+                        android:src="@drawable/pencil_simple"
+                        android:padding="5dp"
+                        android:background="@drawable/circle_transparent_button_background"
+                        android:contentDescription="@string/content_description_chat_edit_conversation_subject"
+                        android:visibility="@{!viewModel.isGroup || viewModel.isReadOnly || !viewModel.isMyselfAdmin ? View.GONE : View.VISIBLE}"
+                        app:tint="?attr/color_main2_600"
+                        app:layout_constraintBottom_toBottomOf="@id/title"
+                        app:layout_constraintStart_toEndOf="@id/title"
+                        app:layout_constraintTop_toTopOf="@id/title" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/address"
+                        style="@style/default_text_style"
+                        android:onClick="@{copySipUriClickListener}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="@{viewModel.sipUri, default=`sip:john.doe@sip.example.org`}"
+                        android:textColor="?attr/color_main2_800"
+                        android:textSize="14sp"
+                        android:drawableEnd="@drawable/copy"
+                        android:drawablePadding="5dp"
+                        android:visibility="@{viewModel.isGroup || viewModel.hideSipAddresses ? View.GONE : View.VISIBLE, default=gone}"
+                        app:drawableTint="?attr/color_main2_600"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/title" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/peer_address"
+                        style="@style/default_text_style"
+                        android:onClick="@{copyPeerSipUriClickListener}"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:text="@{viewModel.peerSipUri, default=`sip:chatroom-xxxx@sip.example.org`}"
+                        android:textColor="?attr/color_main2_800"
+                        android:textSize="14sp"
+                        android:drawableEnd="@drawable/copy"
+                        android:drawablePadding="5dp"
+                        android:visibility="@{viewModel.showPeerSipUri &amp;&amp; !viewModel.hideSipAddresses ? View.VISIBLE : View.GONE, default=gone}"
+                        app:drawableTint="?attr/color_main2_600"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/address" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/status"
+                        style="@style/default_text_style_300"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{viewModel.avatarModel.lastPresenceInfo, default=@string/contact_presence_status_online}"
+                        android:textColor="@{viewModel.avatarModel.presenceStatus == ConsolidatedPresence.Online ? @color/success_500 : @color/warning_600, default=@color/success_500}"
+                        android:textSize="14sp"
+                        android:visibility="@{viewModel.isGroup || viewModel.avatarModel.presenceStatus == ConsolidatedPresence.Offline ? View.GONE : View.VISIBLE, default=gone}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/peer_address"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/call_actions"
@@ -204,7 +219,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginTop="20dp"
                     android:background="@drawable/shape_squircle_white_background"
-                    app:layout_constraintTop_toBottomOf="@id/status"
+                    app:layout_constraintTop_toBottomOf="@id/avatar_content"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
 

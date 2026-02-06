@@ -45,6 +45,7 @@ Group changes to describe their impact on the project, as follows:
 - Now loading media/documents contents in conversation by chunks (instead of all of them at once)
 - Simplified audio device name in settings
 - Reworked some settings (moved calls related ones from advanced settings to advanced calls settings)
+- Removed menu to access account profile, button is now directly available from drawer menu
 - Increased shared media preview size in chat
 - Un-encrypted conversation warning will be more visible for accounts that support end-to-end encrypted conversations
 - Made numpad buttons larger by changing their shape
