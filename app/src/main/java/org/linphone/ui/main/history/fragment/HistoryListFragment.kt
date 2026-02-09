@@ -20,15 +20,12 @@
 package org.linphone.ui.main.history.fragment
 
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.PopupWindow
 import androidx.annotation.UiThread
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -38,7 +35,6 @@ import org.linphone.LinphoneApplication.Companion.coreContext
 import org.linphone.R
 import org.linphone.core.tools.Log
 import org.linphone.databinding.HistoryListFragmentBinding
-import org.linphone.databinding.HistoryListPopupMenuBinding
 import org.linphone.ui.GenericActivity
 import org.linphone.ui.main.fragment.AbstractMainFragment
 import org.linphone.ui.main.history.adapter.HistoryListAdapter
@@ -235,8 +231,8 @@ class HistoryListFragment : AbstractMainFragment() {
             }
         }
 
-        binding.setMenuClickListener {
-            showPopupMenu()
+        binding.setDeleteAllClickListener {
+            showDeleteConfirmationDialog()
         }
 
         binding.setStartCallClickListener {
@@ -287,30 +283,6 @@ class HistoryListFragment : AbstractMainFragment() {
                 R.drawable.check
             )
         }
-    }
-
-    private fun showPopupMenu() {
-        val popupView: HistoryListPopupMenuBinding = DataBindingUtil.inflate(
-            LayoutInflater.from(requireContext()),
-            R.layout.history_list_popup_menu,
-            null,
-            false
-        )
-        val popupWindow = PopupWindow(
-            popupView.root,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            true
-        )
-
-        popupView.setDeleteAllHistoryClickListener {
-            showDeleteConfirmationDialog()
-            popupWindow.dismiss()
-        }
-
-        // Elevation is for showing a shadow around the popup
-        popupWindow.elevation = 20f
-        popupWindow.showAsDropDown(binding.topBar.extraAction, 0, 0, Gravity.BOTTOM)
     }
 
     private fun showDeleteConfirmationDialog() {
