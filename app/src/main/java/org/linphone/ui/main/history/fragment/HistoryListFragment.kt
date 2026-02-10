@@ -33,9 +33,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.linphone.LinphoneApplication.Companion.coreContext
 import org.linphone.R
+import org.linphone.contacts.getListOfSipAddressesAndPhoneNumbers
 import org.linphone.core.tools.Log
 import org.linphone.databinding.HistoryListFragmentBinding
 import org.linphone.ui.GenericActivity
+import org.linphone.ui.main.contacts.model.ContactNumberOrAddressClickListener
+import org.linphone.ui.main.contacts.model.ContactNumberOrAddressModel
+import org.linphone.ui.main.contacts.model.NumberOrAddressPickerDialogModel
 import org.linphone.ui.main.fragment.AbstractMainFragment
 import org.linphone.ui.main.history.adapter.HistoryListAdapter
 import org.linphone.utils.ConfirmationDialogModel
@@ -43,6 +47,8 @@ import org.linphone.ui.main.history.viewmodel.HistoryListViewModel
 import org.linphone.utils.AppUtils
 import org.linphone.utils.DialogUtils
 import org.linphone.utils.Event
+import org.linphone.utils.LinphoneUtils
+import org.linphone.utils.RecyclerViewHeaderDecoration
 
 @UiThread
 class HistoryListFragment : AbstractMainFragment() {
@@ -57,6 +63,21 @@ class HistoryListFragment : AbstractMainFragment() {
     private lateinit var adapter: HistoryListAdapter
 
     private var bottomSheetDialog: BottomSheetDialogFragment? = null
+
+    private val numberOrAddressClickListener = object : ContactNumberOrAddressClickListener {
+        @UiThread
+        override fun onClicked(model: ContactNumberOrAddressModel) {
+            coreContext.postOnCoreThread {
+                val address = model.address
+                if (address != null) {
+                    Log.i("$TAG Starting call to [${address.asStringUriOnly()}]")
+                    coreContext.startAudioCall(address)
+                }
+            }
+        }
+
+        override fun onLongPress(model: ContactNumberOrAddressModel) { }
+    }
 
     override fun onDefaultAccountChanged() {
         Log.i(
@@ -104,6 +125,9 @@ class HistoryListFragment : AbstractMainFragment() {
         binding.historyList.outlineProvider = outlineProvider
         binding.historyList.clipToOutline = true
 
+        val headerItemDecoration = RecyclerViewHeaderDecoration(requireContext(), adapter)
+        binding.historyList.addItemDecoration(headerItemDecoration)
+
         adapter.callLogLongClickedEvent.observe(viewLifecycleOwner) {
             it.consume { model ->
                 val modalBottomSheet = HistoryMenuDialogFragment(
@@ -142,7 +166,7 @@ class HistoryListFragment : AbstractMainFragment() {
                     { // onDeleteCallLog
                         Log.i("$TAG Deleting call log with ref key or call ID [${model.id}]")
                         model.delete()
-                        listViewModel.applyFilter()
+                        listViewModel.filter()
                     }
                 )
                 modalBottomSheet.show(parentFragmentManager, HistoryMenuDialogFragment.TAG)
@@ -179,6 +203,35 @@ class HistoryListFragment : AbstractMainFragment() {
                         coreContext.startAudioCall(model.address)
                     }
                 }
+            }
+        }
+
+        adapter.callFriendClickedEvent.observe(viewLifecycleOwner) {
+            it.consume { friend ->
+                coreContext.postOnCoreThread {
+                    val singleAvailableAddress = LinphoneUtils.getSingleAvailableAddressForFriend(friend)
+                    if (singleAvailableAddress != null) {
+                        Log.i(
+                            "$TAG Only 1 SIP address or phone number found for contact [${friend.name}], using it"
+                        )
+                        coreContext.startAudioCall(singleAvailableAddress)
+                    } else {
+                        val list = friend.getListOfSipAddressesAndPhoneNumbers(numberOrAddressClickListener)
+                        Log.i(
+                            "$TAG [${list.size}] numbers or addresses found for contact [${friend.name}], showing selection dialog"
+                        )
+                        coreContext.postOnMainThread {
+                            showNumbersOrAddressesDialog(list)
+                        }
+                    }
+                }
+            }
+        }
+
+        adapter.callAddressClickedEvent.observe(viewLifecycleOwner) {
+            it.consume { address ->
+                Log.i("$TAG Starting call to [${address.asStringUriOnly()}]")
+                coreContext.startAudioCall(address)
             }
         }
 
@@ -302,6 +355,23 @@ class HistoryListFragment : AbstractMainFragment() {
             it.consume {
                 Log.w("$TAG Removing all call entries from database")
                 listViewModel.removeAllCallLogs()
+                dialog.dismiss()
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun showNumbersOrAddressesDialog(list: List<ContactNumberOrAddressModel>) {
+        val numberOrAddressModel = NumberOrAddressPickerDialogModel(list)
+        val dialog =
+            DialogUtils.getNumberOrAddressPickerDialog(
+                requireActivity(),
+                numberOrAddressModel
+            )
+
+        numberOrAddressModel.dismissEvent.observe(viewLifecycleOwner) { event ->
+            event.consume {
                 dialog.dismiss()
             }
         }

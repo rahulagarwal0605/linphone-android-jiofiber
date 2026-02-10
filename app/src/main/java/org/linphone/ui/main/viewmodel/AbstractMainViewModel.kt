@@ -241,10 +241,12 @@ open class AbstractMainViewModel
 
     @UiThread
     fun applyFilter(filter: String = currentFilter) {
-        Log.i("$TAG New filter set by user [$filter]")
-        currentFilter = filter
-        isFilterEmpty.postValue(filter.isEmpty())
-        filter()
+        if (currentFilter != filter) {
+            Log.i("$TAG New filter set by user [$filter]")
+            currentFilter = filter
+            isFilterEmpty.postValue(filter.isEmpty())
+            filter()
+        }
     }
 
     @UiThread

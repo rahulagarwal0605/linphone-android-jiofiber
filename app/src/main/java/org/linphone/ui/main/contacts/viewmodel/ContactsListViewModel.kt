@@ -153,6 +153,7 @@ class ContactsListViewModel
         showFavourites.value = corePreferences.showFavoriteContacts
         showFilter.value = !corePreferences.hidePhoneNumbers && !corePreferences.hideSipAddresses
         disableAddContact.value = corePreferences.disableAddContact
+        isListFiltered.value = false
 
         coreContext.postOnCoreThread { core ->
             domainFilter = corePreferences.contactsFilter
@@ -169,9 +170,7 @@ class ContactsListViewModel
             favouritesMagicSearch.limitedSearch = false
             favouritesMagicSearch.addListener(favouritesMagicSearchListener)
 
-            coreContext.postOnMainThread {
-                applyFilter(currentFilter)
-            }
+            applyFilter(currentFilter, domainFilter)
         }
     }
 
@@ -353,7 +352,6 @@ class ContactsListViewModel
         Log.i("$TAG Processing [${results.size}] results, favourites is [$favourites]")
 
         val list = arrayListOf<ContactAvatarModel>()
-        var count = 0
         val collator = Collator.getInstance(Locale.getDefault())
         val hideEmptyContacts = corePreferences.hideContactsWithoutPhoneNumberOrSipAddress
 
@@ -384,19 +382,10 @@ class ContactsListViewModel
                 coreContext.contactsManager.getContactAvatarModelForAddress(result.address)
             }
             model.refreshSortingName()
-
-            list.add(model)
-            count += 1
-
             val starred = friend?.starred == true
             model.isFavourite.postValue(starred)
 
-            if (!favourites && firstLoad && count == 20) {
-                list.sortWith { model1, model2 ->
-                    collator.compare(model1.getNameToUseForSorting(), model2.getNameToUseForSorting())
-                }
-                contactsList.postValue(list)
-            }
+            list.add(model)
         }
 
         list.sortWith { model1, model2 ->
