@@ -468,7 +468,7 @@
                         android:layout_marginStart="3dp"
                         android:layout_marginEnd="3dp"
                         android:max="100"
-                        android:progress="@{viewModel.trustedDevicesPercentage, default=0}"
+                        android:progress="@{viewModel.trustedDevicesPercentage, default=20}"
                         app:trackCornerRadius="50dp"
                         app:trackThickness="22dp"
                         app:trackColor="@color/transparent_color"
@@ -479,6 +479,16 @@
                         app:layout_constraintTop_toTopOf="@id/trusted_devices_progress_background"
                         app:layout_constraintBottom_toBottomOf="@id/trusted_devices_progress_background"/>
 
+                    <View
+                        android:id="@+id/trusted_devices_progress_label_anchor"
+                        android:layout_width="1dp"
+                        android:layout_height="1dp"
+                        app:layout_constraintHorizontal_bias="@{viewModel.trustedDevicesPercentageFloat, default=0.1}"
+                        app:layout_constraintStart_toStartOf="@id/trusted_devices_progress"
+                        app:layout_constraintEnd_toEndOf="@id/trusted_devices_progress"
+                        app:layout_constraintTop_toTopOf="@id/trusted_devices_progress"
+                        app:layout_constraintBottom_toBottomOf="@id/trusted_devices_progress" />
+
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/default_text_style_700"
                         android:id="@+id/trusted_devices_progress_label"
@@ -486,12 +496,11 @@
                         android:layout_height="0dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginEnd="5dp"
-                        android:text="@{String.valueOf(viewModel.trustedDevicesPercentage) + `%`, default=`0%`}"
-                        android:textColor="@{viewModel.trustedDevicesPercentage > 15 ? @color/bc_white : @color/red_danger_500_night, default=@color/red_danger_500_night}"
+                        android:text="@{String.valueOf(viewModel.trustedDevicesPercentage) + `%`, default=`20%`}"
+                        android:textColor="@{viewModel.trustedDevicesPercentage > 15 ? @color/bc_white : @color/red_danger_500_night, default=@color/bc_white}"
                         android:textSize="12sp"
-                        app:layout_constraintHorizontal_bias="@{viewModel.trustedDevicesPercentageFloat, default=0.5}"
-                        app:layout_constraintStart_toStartOf="@id/trusted_devices_progress"
-                        app:layout_constraintEnd_toEndOf="@id/trusted_devices_progress"
+                        app:layout_constraintStart_toStartOf="@id/trusted_devices_progress_label_anchor"
+                        app:layout_constraintEnd_toEndOf="@id/trusted_devices_progress_label_anchor"
                         app:layout_constraintTop_toTopOf="@id/trusted_devices_progress"
                         app:layout_constraintBottom_toBottomOf="@id/trusted_devices_progress" />
 
