@@ -492,6 +492,13 @@ class NotificationsManager
             Log.i("$TAG A message has been edited, checking if notification should be updated")
             updateConversationNotification(chatRoom, message)
         }
+
+        override fun onChatRoomSubjectChanged(core: Core, chatRoom: ChatRoom) {
+            if (ShortcutUtils.isShortcutToChatRoomAlreadyCreated(coreContext.context, chatRoom)) {
+                Log.i("$TAG Updating chat room shortcut with new subject [${chatRoom.subjectUtf8}]")
+                ShortcutUtils.createOrUpdateChatRoomShortcut(coreContext.context, chatRoom)
+            }
+        }
     }
 
     val chatMessageListener: ChatMessageListener = object : ChatMessageListenerStub() {
@@ -1019,7 +1026,7 @@ class NotificationsManager
                 notifiable.isGroup = false
             } else {
                 notifiable.isGroup = true
-                notifiable.groupTitle = chatRoom.subject
+                notifiable.groupTitle = chatRoom.subjectUtf8
             }
 
             for (message in chatRoom.unreadHistory) {
@@ -1028,6 +1035,9 @@ class NotificationsManager
                 notifiable.messages.add(notifiableMessage)
             }
         } else {
+            // Update notification subject in case it has changed since last message
+            notifiable.groupTitle = chatRoom.subjectUtf8
+
             for (message in messages) {
                 if (message.isRead || message.isOutgoing) continue
                 val notifiableMessage = getNotifiableForChatMessage(message)
@@ -1044,11 +1054,11 @@ class NotificationsManager
         val notifiable = getNotifiableForConversation(chatRoom, messages)
 
         if (!chatRoom.hasCapability(ChatRoom.Capabilities.OneToOne.toInt())) {
-            if (chatRoom.subject != notifiable.groupTitle) {
+            if (chatRoom.subjectUtf8 != notifiable.groupTitle) {
                 Log.i(
-                    "$TAG Updating notification subject from [${notifiable.groupTitle}] to [${chatRoom.subject}]"
+                    "$TAG Updating notification subject from [${notifiable.groupTitle}] to [${chatRoom.subjectUtf8}]"
                 )
-                notifiable.groupTitle = chatRoom.subject
+                notifiable.groupTitle = chatRoom.subjectUtf8
             }
         }
 

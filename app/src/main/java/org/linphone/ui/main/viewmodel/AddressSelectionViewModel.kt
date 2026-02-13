@@ -448,7 +448,7 @@ abstract class AddressSelectionViewModel
                         null
                     }
                 } else {
-                    if (chatRoom.subject.orEmpty().contains(filter, ignoreCase = true)) {
+                    if (chatRoom.subjectUtf8.orEmpty().contains(filter, ignoreCase = true)) {
                         chatRoom
                     } else {
                         chatRoom.participants.find {
@@ -491,7 +491,7 @@ abstract class AddressSelectionViewModel
                 val subject = if (isOneToOne) {
                     friend?.name
                 } else {
-                    chatRoom.subject
+                    chatRoom.subjectUtf8
                 }
                 val model = ConversationContactOrSuggestionModel(
                     remoteAddress,
@@ -502,7 +502,7 @@ abstract class AddressSelectionViewModel
 
                 val avatarModel = if (!isOneToOne) {
                     val fakeFriend = coreContext.core.createFriend()
-                    fakeFriend.name = chatRoom.subject
+                    fakeFriend.name = chatRoom.subjectUtf8
                     val avatarModel = ContactAvatarModel(fakeFriend)
                     avatarModel.defaultToConversationIcon.postValue(true)
                     avatarModel

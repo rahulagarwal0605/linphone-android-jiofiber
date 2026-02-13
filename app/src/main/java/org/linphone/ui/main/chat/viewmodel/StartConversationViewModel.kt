@@ -63,7 +63,7 @@ class StartConversationViewModel
             if (state == ChatRoom.State.Instantiated) return
 
             val id = LinphoneUtils.getConversationId(chatRoom)
-            Log.i("$TAG Conversation [$id] (${chatRoom.subject}) state changed: [$state]")
+            Log.i("$TAG Conversation [$id] (${chatRoom.subjectUtf8}) state changed: [$state]")
 
             if (state == ChatRoom.State.Created) {
                 Log.i("$TAG Conversation [$id] successfully created")

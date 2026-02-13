@@ -101,7 +101,7 @@ class ConversationModel
         override fun onStateChanged(chatRoom: ChatRoom, newState: ChatRoom.State?) {
             Log.i("$TAG Conversation state changed [${chatRoom.state}]")
             if (chatRoom.state == ChatRoom.State.Created) {
-                subject.postValue(chatRoom.subject)
+                subject.postValue(chatRoom.subjectUtf8)
                 computeParticipants()
             } else if (chatRoom.state == ChatRoom.State.Deleted) {
                 Log.i("$TAG Conversation [$id] has been deleted")
@@ -113,7 +113,7 @@ class ConversationModel
         override fun onConferenceJoined(chatRoom: ChatRoom, eventLog: EventLog) {
             // This is required as a Created chat room may not have the participants list yet
             Log.i("$TAG Conversation has been joined")
-            subject.postValue(chatRoom.subject)
+            subject.postValue(chatRoom.subjectUtf8)
             computeParticipants()
         }
 
@@ -156,8 +156,8 @@ class ConversationModel
 
         @WorkerThread
         override fun onSubjectChanged(chatRoom: ChatRoom, eventLog: EventLog) {
-            Log.i("$TAG Conversation subject changed [${chatRoom.subject}]")
-            subject.postValue(chatRoom.subject)
+            Log.i("$TAG Conversation subject changed [${chatRoom.subjectUtf8}]")
+            subject.postValue(chatRoom.subjectUtf8)
             computeParticipants()
         }
 
@@ -201,7 +201,7 @@ class ConversationModel
         chatRoom.addListener(chatRoomListener)
 
         computeComposingLabel()
-        subject.postValue(chatRoom.subject)
+        subject.postValue(chatRoom.subjectUtf8)
         computeParticipants()
 
         isMuted.postValue(chatRoom.muted)
@@ -433,9 +433,9 @@ class ConversationModel
         }
 
         if (isGroup) {
-            if (avatarModel.value == null || avatarModel.value?.contactName != chatRoom.subject) {
+            if (avatarModel.value == null || avatarModel.value?.contactName != chatRoom.subjectUtf8) {
                 val fakeFriend = coreContext.core.createFriend()
-                fakeFriend.name = chatRoom.subject
+                fakeFriend.name = chatRoom.subjectUtf8
                 val model = ContactAvatarModel(fakeFriend)
                 model.defaultToConversationIcon.postValue(true)
                 model.updateSecurityLevelUsingConversation(chatRoom)
