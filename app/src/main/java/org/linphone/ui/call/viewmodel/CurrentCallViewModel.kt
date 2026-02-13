@@ -392,6 +392,13 @@ class CurrentCallViewModel
                         }
                         else -> {}
                     }
+
+                    if (call.conference != null && !conferenceModel.conferenceConfigured) {
+                        Log.i("$TAG Found conference on call but not conference model, initializing it now")
+                        conferenceModel.configureFromCall(call)
+                        updateMicrophoneMutedIcon()
+                        goToConferenceEvent.postValue(Event(true))
+                    }
                 }
             }
 
@@ -695,21 +702,7 @@ class CurrentCallViewModel
     @UiThread
     fun refreshMicrophoneState() {
         coreContext.postOnCoreThread {
-            if (::currentCall.isInitialized) {
-                val micMuted = if (currentCall.conference != null) {
-                    currentCall.conference?.microphoneMuted == true
-                } else {
-                    currentCall.microphoneMuted
-                }
-                if (micMuted != isMicrophoneMuted.value) {
-                    if (micMuted) {
-                        Log.w("$TAG Microphone is muted, updating button state accordingly")
-                    } else {
-                        Log.i("$TAG Microphone is not muted, updating button state accordingly")
-                    }
-                    isMicrophoneMuted.postValue(micMuted)
-                }
-            }
+            updateMicrophoneMutedIcon()
         }
     }
 
@@ -1097,6 +1090,7 @@ class CurrentCallViewModel
             conferenceModel.configureFromCall(call)
             goToConferenceEvent.postValue(Event(true))
         } else {
+            Log.i("$TAG No conference attached to this call, going to call fragment")
             conferenceModel.destroy()
             goToCallEvent.postValue(Event(true))
         }
@@ -1259,6 +1253,25 @@ class CurrentCallViewModel
     fun updateCallDuration() {
         if (::currentCall.isInitialized) {
             callDuration.postValue(currentCall.duration)
+        }
+    }
+
+    @WorkerThread
+    private fun updateMicrophoneMutedIcon() {
+        if (::currentCall.isInitialized) {
+            val micMuted = if (currentCall.conference != null) {
+                currentCall.conference?.microphoneMuted == true
+            } else {
+                currentCall.microphoneMuted
+            }
+            if (micMuted != isMicrophoneMuted.value) {
+                if (micMuted) {
+                    Log.w("$TAG Microphone is muted, updating button state accordingly")
+                } else {
+                    Log.i("$TAG Microphone is not muted, updating button state accordingly")
+                }
+                isMicrophoneMuted.postValue(micMuted)
+            }
         }
     }
 

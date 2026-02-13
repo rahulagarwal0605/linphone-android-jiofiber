@@ -331,17 +331,6 @@ class ActiveCallFragment : GenericCallFragment() {
             }
         }
 
-        callViewModel.goToConferenceEvent.observe(viewLifecycleOwner) {
-            it.consume {
-                if (findNavController().currentDestination?.id == R.id.activeCallFragment) {
-                    Log.i("$TAG Going to conference fragment")
-                    val action =
-                        ActiveCallFragmentDirections.actionActiveCallFragmentToActiveConferenceCallFragment()
-                    findNavController().navigate(action)
-                }
-            }
-        }
-
         callViewModel.isReceivingVideo.observe(viewLifecycleOwner) { receiving ->
             if (!receiving && callViewModel.fullScreenMode.value == true) {
                 Log.i("$TAG We are no longer receiving video, leaving full screen mode")

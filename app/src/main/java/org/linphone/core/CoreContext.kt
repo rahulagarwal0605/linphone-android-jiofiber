@@ -1040,15 +1040,21 @@ class CoreContext
 
     @WorkerThread
     fun terminateCall(call: Call) {
-        if (call.dir == Call.Dir.Incoming && LinphoneUtils.isCallIncoming(call.state)) {
-            val reason = if (call.core.callsNb > 1) Reason.Busy else Reason.Declined
-            Log.i(
-                "$TAG Declining call [${call.remoteAddress.asStringUriOnly()}] with reason [$reason]"
-            )
-            call.decline(reason)
+        val conference = call.conference
+        if (conference != null) {
+            Log.i("$TAG Terminating conference [${call.remoteAddress.asStringUriOnly()}]")
+            conference.terminate()
         } else {
-            Log.i("$TAG Terminating call [${call.remoteAddress.asStringUriOnly()}]")
-            call.terminate()
+            if (call.dir == Call.Dir.Incoming && LinphoneUtils.isCallIncoming(call.state)) {
+                val reason = if (call.core.callsNb > 1) Reason.Busy else Reason.Declined
+                Log.i(
+                    "$TAG Declining call [${call.remoteAddress.asStringUriOnly()}] with reason [$reason]"
+                )
+                call.decline(reason)
+            } else {
+                Log.i("$TAG Terminating call [${call.remoteAddress.asStringUriOnly()}]")
+                call.terminate()
+            }
         }
     }
 

@@ -43,6 +43,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
 import androidx.window.layout.WindowLayoutInfo
@@ -262,6 +263,18 @@ class CallActivity : GenericActivity() {
         callViewModel.proximitySensorEnabled.observe(this) { enabled ->
             Log.i("$TAG ${if (enabled) "Enabling" else "Disabling"} proximity sensor")
             coreContext.enableProximitySensor(enabled)
+        }
+
+        callViewModel.goToCallEvent.observe(this) {
+            it.consume {
+                navigateToActiveCall(true)
+            }
+        }
+
+        callViewModel.goToConferenceEvent.observe(this) {
+            it.consume {
+                navigateToActiveCall(false)
+            }
         }
 
         callsViewModel.showIncomingCallEvent.observe(this) {
