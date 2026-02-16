@@ -332,6 +332,12 @@
     <string name="settings_developer_clear_native_friends_in_database_title">Supprimer les contacts natifs importés</string>
     <string name="settings_developer_clear_native_friends_in_database_subtitle">Ils seront synchronisés à nouveau au prochain démarrage de l\'application sauf si vous retirez la permission de lire les contacts</string>
     <string name="settings_developer_cleared_native_friends_in_database_toast">Contacts importés supprimés</string>
+    <string name="settings_developer_clear_orphan_auth_info_title">Supprimer les informations d\'authentification orphelines</string>
+    <string name="settings_developer_no_auth_info_removed_toast">Aucune information d\'authentification orpheline trouvée</string>
+    <plurals name="settings_developer_cleared_auth_info_toast" tools:ignore="MissingQuantity">
+        <item quantity="one">%s information d\'authentification supprimée</item>
+        <item quantity="other">%s informations d\'authentification supprimées</item>
+    </plurals>
 
     <!-- Account profile & settings -->
     <string name="manage_account_title">Mon compte</string>

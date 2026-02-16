@@ -374,6 +374,12 @@
     <string name="settings_developer_clear_native_friends_in_database_title">Clear imported contacts from native address book</string>
     <string name="settings_developer_clear_native_friends_in_database_subtitle">They will be imported again the next time the app starts unless you remove the contacts permission</string>
     <string name="settings_developer_cleared_native_friends_in_database_toast">Imported contacts have been deleted</string>
+    <string name="settings_developer_clear_orphan_auth_info_title">Clear authentication info no longer associated to any account</string>
+    <string name="settings_developer_no_auth_info_removed_toast">No orphan authentication info found</string>
+    <plurals name="settings_developer_cleared_auth_info_toast">
+        <item quantity="one">%s orphan authentication info removed</item>
+        <item quantity="other">%s orphans authentication info removed</item>
+    </plurals>
 
     <!-- Account profile & settings -->
     <string name="manage_account_title">Manage account</string>

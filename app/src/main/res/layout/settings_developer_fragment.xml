@@ -315,21 +315,25 @@
                         app:layout_constraintEnd_toEndOf="parent"/>
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/settings_title_style"
+                        style="@style/tertiary_button_label_style"
                         android:id="@+id/clear_friends_db_label"
                         android:onClick="@{() -> viewModel.clearNativeFriendsDatabase()}"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginEnd="16dp"
                         android:layout_marginTop="20dp"
+                        android:background="@drawable/tertiary_button_background"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="6dp"
+                        android:gravity="center"
                         android:text="@string/settings_developer_clear_native_friends_in_database_title"
                         android:maxLines="2"
                         android:ellipsize="end"
-                        android:drawablePadding="5dp"
-                        android:drawableEnd="@drawable/warning_circle"
-                        android:drawableTint="?attr/color_main2_600"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/push_compatible_domains_list"/>
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -346,7 +350,30 @@
                         app:layout_constraintVertical_bias="0"
                         app:layout_constraintTop_toBottomOf="@id/clear_friends_db_label"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/tertiary_button_label_style"
+                        android:id="@+id/clear_orphan_auth_info"
+                        android:onClick="@{() -> viewModel.clearOrphanAuthInfo()}"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/tertiary_button_background"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="6dp"
+                        android:gravity="center"
+                        android:text="@string/settings_developer_clear_orphan_auth_info_title"
+                        android:maxLines="2"
+                        android:ellipsize="end"
+                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/clear_friends_db_subtitle"
                         app:layout_constraintBottom_toBottomOf="parent"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

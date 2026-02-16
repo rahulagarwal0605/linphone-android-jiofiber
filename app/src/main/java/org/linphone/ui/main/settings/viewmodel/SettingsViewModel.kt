@@ -1235,4 +1235,34 @@ class SettingsViewModel
             showGreenToast(R.string.settings_developer_cleared_native_friends_in_database_toast, R.drawable.trash_simple)
         }
     }
+
+    @UiThread
+    fun clearOrphanAuthInfo() {
+        coreContext.postOnCoreThread { core ->
+            var count = 0
+            for (authInfo in core.authInfoList) {
+                val username = authInfo.username
+                if (username == null) {
+                    Log.i("$TAG Removing auth info [$authInfo] without username")
+                    core.removeAuthInfo(authInfo)
+                    count += 1
+                } else {
+                    val account = core.accountList.find {
+                        it.params.identityAddress?.username == username
+                    }
+                    if (account == null) {
+                        Log.i("$TAG Removing auth info [$authInfo] with username [$username] for which no account was found")
+                        core.removeAuthInfo(authInfo)
+                        count += 1
+                    }
+                }
+            }
+            if (count == 0) {
+                showGreenToast(R.string.settings_developer_no_auth_info_removed_toast, R.drawable.trash_simple)
+            } else {
+                val message = AppUtils.getStringWithPlural(R.plurals.settings_developer_cleared_auth_info_toast, count, "$count")
+                showFormattedGreenToast(message, R.drawable.warning_circle)
+            }
+        }
+    }
 }
