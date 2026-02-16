@@ -51,14 +51,11 @@ class SingleSignOnViewModel
         private const val TAG = "[Single Sign On ViewModel]"
     }
 
-    val singleSignOnProcessCompletedEvent = MutableLiveData<Event<Boolean>>()
+    val operationInProgress = MutableLiveData<Boolean>()
 
-    private var clientId: String
-    private val redirectUri: String
-
-    private var singleSignOnUrl = ""
-
-    private var username: String = ""
+    val singleSignOnProcessCompletedEvent: MutableLiveData<Event<Boolean>> by lazy {
+        MutableLiveData()
+    }
 
     val startAuthIntentEvent: MutableLiveData<Event<Intent>> by lazy {
         MutableLiveData()
@@ -68,11 +65,19 @@ class SingleSignOnViewModel
         MutableLiveData()
     }
 
+    private var clientId: String
+    private val redirectUri: String
+
+    private var singleSignOnUrl = ""
+
+    private var username: String = ""
+
     private lateinit var authState: AuthState
     private lateinit var authService: AuthorizationService
 
     init {
         clientId = corePreferences.singleSignOnClientId
+        operationInProgress.value = true
 
         val openIdCallbackScheme = coreContext.context.getString(R.string.linphone_openid_callback_scheme)
         redirectUri = "$openIdCallbackScheme:/openidcallback"
@@ -121,12 +126,14 @@ class SingleSignOnViewModel
         } else {
             Log.e("$TAG Can't perform request token [$ex]")
             onErrorEvent.postValue(Event(ex?.errorDescription.orEmpty()))
+            operationInProgress.value = false
         }
     }
 
     @UiThread
     private fun singleSignOn() {
         Log.i("$TAG Fetch from issuer [$singleSignOnUrl]")
+        operationInProgress.postValue(true)
         AuthorizationServiceConfiguration.fetchFromIssuer(
             singleSignOnUrl.toUri(),
             AuthorizationServiceConfiguration.RetrieveConfigurationCallback { serviceConfiguration, ex ->
@@ -137,12 +144,14 @@ class SingleSignOnViewModel
                     onErrorEvent.postValue(
                         Event("Failed to fetch configuration from issuer $singleSignOnUrl")
                     )
+                    operationInProgress.postValue(false)
                     return@RetrieveConfigurationCallback
                 }
 
                 if (serviceConfiguration == null) {
                     Log.e("$TAG Service configuration is null!")
                     onErrorEvent.postValue(Event("Service configuration is null"))
+                    operationInProgress.postValue(false)
                     return@RetrieveConfigurationCallback
                 }
 
@@ -178,6 +187,7 @@ class SingleSignOnViewModel
 
     @UiThread
     private fun performRefreshToken() {
+        operationInProgress.postValue(true)
         if (::authState.isInitialized) {
             if (!::authService.isInitialized) {
                 authService = AuthorizationService(coreContext.context)
@@ -203,6 +213,7 @@ class SingleSignOnViewModel
                             "$TAG Failed to perform token refresh [$ex], destroying auth_state.json file"
                         )
                         onErrorEvent.postValue(Event(ex?.errorDescription.orEmpty()))
+                        operationInProgress.postValue(false)
 
                         viewModelScope.launch {
                             FileUtils.deleteFile(authStateJsonFile.absolutePath)
@@ -228,6 +239,7 @@ class SingleSignOnViewModel
 
     @UiThread
     private fun performRequestToken(response: AuthorizationResponse) {
+        operationInProgress.postValue(true)
         if (::authService.isInitialized) {
             Log.i("$TAG Starting perform token request")
             authService.performTokenRequest(
@@ -246,6 +258,7 @@ class SingleSignOnViewModel
                 } else {
                     Log.e("$TAG Failed to perform token request [$ex]")
                     onErrorEvent.postValue(Event(ex?.errorDescription.orEmpty()))
+                    operationInProgress.postValue(false)
                 }
             }
         }
@@ -265,6 +278,7 @@ class SingleSignOnViewModel
                 } catch (exception: Exception) {
                     Log.e("$TAG Failed to use serialized AuthState [$exception]")
                     onErrorEvent.postValue(Event("Failed to read stored AuthState"))
+                    operationInProgress.postValue(false)
                 }
             }
         } else {
@@ -294,6 +308,7 @@ class SingleSignOnViewModel
     @UiThread
     private fun updateTokenInfo() {
         Log.i("$TAG Updating token info")
+        operationInProgress.postValue(true)
 
         if (::authState.isInitialized) {
             if (authState.isAuthorized) {
@@ -343,6 +358,7 @@ class SingleSignOnViewModel
             if (expire == null) {
                 Log.e("$TAG Access token expiration time is null!")
                 onErrorEvent.postValue(Event("Invalid access token expiration time"))
+                operationInProgress.postValue(false)
             } else {
                 val accessToken =
                     Factory.instance().createBearerToken(authState.accessToken.orEmpty(), expire / 1000) // Linphone timestamps are in seconds
