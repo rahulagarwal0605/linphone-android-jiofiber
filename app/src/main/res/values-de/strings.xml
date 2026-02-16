@@ -305,7 +305,7 @@
     <string name="history_call_start_no_suggestion_nor_contact">Kein Vorschlag und im Moment kein Kontakt…</string>
     <string name="history_group_call_start_dialog_set_subject">Betreff für Gruppenanruf festlegen</string>
     <string name="history_group_call_start_dialog_subject_hint">Betreff des Gruppenanrufs</string>
-    <string name="history_list_empty_history">Im Moment kein Anruf…</string>
+    <string name="history_list_empty_history">Kein Anruf von/zu diesem Konto gefunden…</string>
     <string name="history_group_call_go_to_conversation">Chat</string>
     <string name="history_dialog_delete_all_call_logs_title">Möchten Sie wirklich den gesamten Anrufverlauf löschen?</string>
     <string name="history_dialog_delete_all_call_logs_message">Alle Anrufe werden aus dem Verlauf gelöscht</string>
