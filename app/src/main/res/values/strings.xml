@@ -262,6 +262,7 @@
     <string name="settings_calls_auto_record_title">Automatically start recording calls</string>
     <string name="settings_calls_change_ringtone_title">Change ringtone</string>
     <string name="settings_calls_change_ringtone_pick_title">Pick ringtone</string>
+    <string name="settings_calls_change_ringtone_picker_unavailable_toast">Ringtone picker isn\'t available!</string>
     <string name="settings_conversations_title">Conversations</string>
     <string name="settings_conversations_auto_download_title">Auto-download files</string>
     <string name="settings_conversations_auto_export_media_to_native_gallery_title">Make downloaded media public</string>
