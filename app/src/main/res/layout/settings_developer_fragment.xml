@@ -332,6 +332,8 @@
                         android:text="@string/settings_developer_clear_native_friends_in_database_title"
                         android:maxLines="2"
                         android:ellipsize="end"
+                        app:layout_constraintWidth_max="@dimen/button_max_width"
+                        app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/push_compatible_domains_list"/>
@@ -371,6 +373,8 @@
                         android:text="@string/settings_developer_clear_orphan_auth_info_title"
                         android:maxLines="2"
                         android:ellipsize="end"
+                        app:layout_constraintWidth_max="@dimen/button_max_width"
+                        app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/clear_friends_db_subtitle"
