@@ -347,6 +347,7 @@
     <string name="manage_account_add_picture">Ajouter une image</string>
     <string name="manage_account_edit_picture">Modifier </string>
     <string name="manage_account_remove_picture">Supprimer</string>
+    <string name="manage_account_status_registration_status_title">État de la connexion</string>
     <string name="manage_account_status_connected_summary">Vous êtes en ligne, on peut vous joindre.</string>
     <string name="manage_account_status_disconnected_summary">Vous êtes hors ligne, probablement car vous n\'êtes pas actuellement connecté à internet.</string>
     <string name="manage_account_status_cleared_summary">Compte désactivé, vous ne recevrez ni appel ni message.</string>
