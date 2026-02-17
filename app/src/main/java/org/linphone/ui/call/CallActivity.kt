@@ -376,6 +376,11 @@ class CallActivity : GenericActivity() {
         if (::callViewModel.isInitialized) {
             callViewModel.pipMode.value = isInPipMode
         }
+
+        if (callsViewModel.callsCount.value == 0) {
+            Log.w("$TAG Call activity is being resumed but no call was found, finishing activity")
+            finish()
+        }
     }
 
     override fun onPause() {

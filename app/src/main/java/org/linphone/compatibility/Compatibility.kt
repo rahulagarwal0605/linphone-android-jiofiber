@@ -52,16 +52,16 @@ class Compatibility {
             id: Int,
             notification: Notification,
             foregroundServiceType: Int
-        ) {
+        ): Boolean {
             if (Version.sdkAboveOrEqual(Version.API34_ANDROID_14_UPSIDE_DOWN_CAKE)) {
-                Api34Compatibility.startServiceForeground(
+                return Api34Compatibility.startServiceForeground(
                     service,
                     id,
                     notification,
                     foregroundServiceType
                 )
             } else {
-                Api28Compatibility.startServiceForeground(service, id, notification)
+                return Api28Compatibility.startServiceForeground(service, id, notification)
             }
         }
 

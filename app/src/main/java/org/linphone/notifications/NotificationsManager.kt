@@ -805,12 +805,15 @@ class NotificationsManager
                 Log.i(
                     "$TAG Service found, starting it as foreground using notification ID [$INCOMING_CALL_ID] with type PHONE_CALL"
                 )
-                Compatibility.startServiceForeground(
+                val success = Compatibility.startServiceForeground(
                     service,
                     INCOMING_CALL_ID,
                     notification,
                     Compatibility.FOREGROUND_SERVICE_TYPE_PHONE_CALL
                 )
+                if (!success) {
+                    Log.e("$TAG Failed to start incoming call foreground service!")
+                }
                 notificationsMap[INCOMING_CALL_ID] = notification
                 currentInCallServiceNotificationId = INCOMING_CALL_ID
                 inCallServiceForegroundNotificationPublished = true
@@ -926,12 +929,15 @@ class NotificationsManager
             Log.i(
                 "$TAG Service found, starting it as foreground using notification ID [${notifiable.notificationId}] with type(s) [${foregroundServiceTypeMaskToString(mask)}]($mask)"
             )
-            Compatibility.startServiceForeground(
+            val success = Compatibility.startServiceForeground(
                 service,
                 notifiable.notificationId,
                 notification,
                 mask
             )
+            if (!success) {
+                Log.e("$TAG Failed to start call foreground service!")
+            }
             notificationsMap[notifiable.notificationId] = notification
             currentInCallServiceNotificationId = notifiable.notificationId
             inCallServiceForegroundNotificationPublished = true
@@ -977,12 +983,15 @@ class NotificationsManager
                 Log.i(
                     "$TAG Service found, starting it as foreground using dummy notification ID [$DUMMY_NOTIF_ID]"
                 )
-                Compatibility.startServiceForeground(
+                val success = Compatibility.startServiceForeground(
                     service,
                     DUMMY_NOTIF_ID,
                     notification,
                     Compatibility.FOREGROUND_SERVICE_TYPE_PHONE_CALL
                 )
+                if (!success) {
+                    Log.e("$TAG Failed to start dummy call foreground service!")
+                }
                 notificationsMap[INCOMING_CALL_ID] = notification
                 currentInCallServiceNotificationId = DUMMY_NOTIF_ID
                 inCallServiceForegroundNotificationPublished = true
@@ -1810,12 +1819,15 @@ class NotificationsManager
             Log.i(
                 "$TAG Keep alive for third party accounts Service found, starting it as foreground using notification ID [$KEEP_ALIVE_FOR_THIRD_PARTY_ACCOUNTS_ID] with type [SPECIAL_USE]"
             )
-            Compatibility.startServiceForeground(
+            val success = Compatibility.startServiceForeground(
                 service,
                 KEEP_ALIVE_FOR_THIRD_PARTY_ACCOUNTS_ID,
                 notification,
                 Compatibility.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
             )
+            if (!success) {
+                Log.e("$TAG Failed to start keep alive foreground service!")
+            }
             currentKeepAliveThirdPartyAccountsForegroundServiceNotificationId = KEEP_ALIVE_FOR_THIRD_PARTY_ACCOUNTS_ID
         } else {
             Log.w("$TAG Keep alive for third party accounts Service hasn't started yet...")
