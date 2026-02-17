@@ -21,11 +21,14 @@ package org.linphone.ui.call.fragment
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.graphics.Outline
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewOutlineProvider
 import androidx.annotation.UiThread
 import androidx.lifecycle.ViewModelProvider
+import org.linphone.R
 import org.linphone.core.tools.Log
 import org.linphone.ui.GenericFragment
 import org.linphone.ui.call.view.RoundCornersTextureView
@@ -38,6 +41,14 @@ abstract class GenericCallFragment : GenericFragment() {
     }
 
     protected lateinit var sharedViewModel: SharedCallViewModel
+
+    protected val outlineProvider = object : ViewOutlineProvider() {
+        override fun getOutline(view: View?, outline: Outline?) {
+            val radius = resources.getDimension(R.dimen.top_list_item_rounded_corner_radius)
+            view ?: return
+            outline?.setRoundRect(0, 0, view.width, (view.height + radius).toInt(), radius)
+        }
+    }
 
     // For moving video preview purposes
     private val videoPreviewTouchListener = View.OnTouchListener { view, event ->

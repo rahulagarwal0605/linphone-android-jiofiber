@@ -298,16 +298,6 @@
                     app:layout_constraintTop_toTopOf="@id/search"
                     app:tint="@color/icon_color_selector" />
 
-                <View
-                    android:id="@+id/background"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:background="?attr/color_main2_000"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/events_list" />
-
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/events_list"
                     android:layout_width="match_parent"

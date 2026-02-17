@@ -55,16 +55,18 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/screen_bottom_margin">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/main_section"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginTop="20dp"
                     android:background="@drawable/shape_squircle_white_background"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
@@ -239,6 +241,7 @@
                     android:drawableEnd="@{viewModel.expandEarlyMedia ? @drawable/caret_up : @drawable/caret_down, default=@drawable/caret_up}"
                     android:drawableTint="?attr/color_main2_600"
                     android:background="@drawable/squircle_transparent_button_background"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/main_section"/>
@@ -246,12 +249,15 @@
                 <include
                     android:id="@+id/early_media_settings"
                     layout="@layout/settings_advanced_calls_early_media"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:visibility="@{viewModel.expandEarlyMedia ? View.VISIBLE : View.GONE, default=gone}"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintTop_toBottomOf="@id/early_media_settings_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     bind:viewModel="@{viewModel}"/>
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -268,6 +274,7 @@
                     android:drawableEnd="@{viewModel.expandAutoAnswer ? @drawable/caret_up : @drawable/caret_down, default=@drawable/caret_up}"
                     android:drawableTint="?attr/color_main2_600"
                     android:background="@drawable/squircle_transparent_button_background"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/early_media_settings"/>
@@ -275,12 +282,15 @@
                 <include
                     android:id="@+id/auto_answer_settings"
                     layout="@layout/settings_advanced_calls_auto_answer"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:visibility="@{viewModel.expandAutoAnswer ? View.VISIBLE : View.GONE, default=gone}"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintTop_toBottomOf="@id/auto_answer_settings_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     bind:viewModel="@{viewModel}"/>
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -297,13 +307,14 @@
                     android:drawableEnd="@{viewModel.expandAudioCodecs ? @drawable/caret_up : @drawable/caret_down, default=@drawable/caret_up}"
                     android:drawableTint="?attr/color_main2_600"
                     android:background="@drawable/squircle_transparent_button_background"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/auto_answer_settings"/>
 
                 <LinearLayout
                     android:id="@+id/audio_codecs"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
@@ -313,6 +324,7 @@
                     android:visibility="@{viewModel.expandAudioCodecs ? View.VISIBLE : View.GONE}"
                     entries="@{viewModel.audioCodecs}"
                     layout="@{@layout/settings_codec_list_cell}"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintTop_toBottomOf="@id/audio_codecs_title"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
@@ -331,23 +343,24 @@
                     android:drawableEnd="@{viewModel.expandVideoCodecs ? @drawable/caret_up : @drawable/caret_down, default=@drawable/caret_up}"
                     android:drawableTint="?attr/color_main2_600"
                     android:background="@drawable/squircle_transparent_button_background"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/audio_codecs"/>
 
                 <LinearLayout
                     android:id="@+id/video_codecs"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="@dimen/screen_bottom_margin"
                     android:orientation="vertical"
                     android:paddingBottom="16dp"
                     android:background="@drawable/shape_squircle_white_background"
                     android:visibility="@{viewModel.expandVideoCodecs ? View.VISIBLE : View.GONE}"
                     entries="@{viewModel.videoCodecs}"
                     layout="@{@layout/settings_codec_list_cell}"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintVertical_bias="0"
                     app:layout_constraintTop_toBottomOf="@id/video_codecs_title"
                     app:layout_constraintStart_toStartOf="parent"

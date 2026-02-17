@@ -65,7 +65,8 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/screen_bottom_margin">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/tertiary_button_label_style"
@@ -106,7 +107,6 @@
                         android:id="@+id/logs_flow"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginTop="20dp"
                         app:flow_wrapMode="chain"
@@ -114,7 +114,7 @@
                         app:flow_verticalGap="10dp"
                         app:flow_horizontalStyle="spread_inside"
                         app:constraint_referenced_ids="clean_logs, send_logs"
-                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintStart_toStartOf="@id/info_section"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -125,6 +125,7 @@
                         android:layout_marginEnd="16dp"
                         android:layout_marginTop="20dp"
                         android:background="@drawable/shape_squircle_white_background"
+                        app:layout_constraintWidth_max="@dimen/section_max_width"
                         app:layout_constraintTop_toBottomOf="@id/logs_flow"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent">
@@ -330,10 +331,8 @@
                         android:id="@+id/show_config_file"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginTop="20dp"
-                        android:layout_marginBottom="@dimen/screen_bottom_margin"
                         android:background="@drawable/tertiary_button_background"
                         android:paddingStart="12dp"
                         android:paddingEnd="12dp"
@@ -345,7 +344,7 @@
                         android:ellipsize="end"
                         android:visibility="@{viewModel.canConfigFileBeViewed ? View.VISIBLE : View.GONE, default=gone}"
                         app:layout_constraintVertical_bias="0"
-                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintStart_toStartOf="@id/info_section"
                         app:layout_constraintTop_toBottomOf="@id/info_section"
                         app:layout_constraintBottom_toBottomOf="parent"/>
 

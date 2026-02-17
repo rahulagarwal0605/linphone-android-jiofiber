@@ -86,24 +86,6 @@
                     android:layout_height="wrap_content"
                     android:paddingBottom="@dimen/screen_bottom_margin">
 
-                    <androidx.constraintlayout.widget.Group
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:constraint_referenced_ids="company_label, company"
-                        android:visibility="@{viewModel.company.length() > 0 ? View.VISIBLE : View.GONE}" />
-
-                    <androidx.constraintlayout.widget.Group
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:constraint_referenced_ids="title_label, title"
-                        android:visibility="@{viewModel.title.length() > 0 ? View.VISIBLE : View.GONE}" />
-
-                    <androidx.constraintlayout.widget.Group
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:constraint_referenced_ids="trusted_devices_count, trusted_devices_progress, devices, trusted_devices_progress_label, trusted_devices_progress_background"
-                        android:visibility="@{viewModel.showContactTrustAndDevices ? (viewModel.expandDevicesTrust &amp;&amp; viewModel.devices.size() > 0 ? View.VISIBLE : View.GONE) : View.GONE, default=gone}" />
-
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/avatar_content"
                         android:layout_width="0dp"
@@ -112,6 +94,7 @@
                         android:layout_marginEnd="16dp"
                         android:layout_marginTop="20dp"
                         android:background="@drawable/shape_squircle_white_background"
+                        app:layout_constraintWidth_max="@dimen/section_max_width"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
@@ -165,6 +148,7 @@
                         android:layout_marginEnd="16dp"
                         android:layout_marginTop="20dp"
                         android:background="@drawable/shape_squircle_white_background"
+                        app:layout_constraintWidth_max="@dimen/section_max_width"
                         app:layout_constraintTop_toBottomOf="@id/avatar_content"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent">
@@ -281,14 +265,15 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:padding="10dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginEnd="20dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
                         android:layout_marginTop="20dp"
                         android:text="@string/contact_details_numbers_and_addresses_title"
                         android:drawableEnd="@{viewModel.expandNumbersAndAddresses ? @drawable/caret_up : @drawable/caret_down, default=@drawable/caret_up}"
                         android:drawableTint="?attr/color_main2_600"
                         android:background="@drawable/squircle_transparent_button_background"
                         android:visibility="@{viewModel.atLeastOneSipAddressOrPhoneNumber ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintWidth_max="@dimen/section_max_width"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/call_actions"/>
@@ -301,84 +286,89 @@
                         android:orientation="vertical"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
-                        android:padding="10dp"
                         android:background="@drawable/shape_squircle_white_background"
+                        app:layout_constraintWidth_max="@dimen/section_max_width"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/numbers_and_addresses_label"
                         app:entries="@{viewModel.sipAddressesAndPhoneNumbers}"
                         app:layout="@{@layout/contact_number_address_list_cell}" />
 
-                    <ImageView
-                        android:id="@+id/info_background"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/contact_job_info"
                         android:layout_width="0dp"
-                        android:layout_height="0dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
-                        android:src="@drawable/shape_squircle_white_background"
-                        android:contentDescription="@null"
                         android:visibility="@{viewModel.title.length() > 0 || viewModel.company.length() > 0 ? View.VISIBLE : View.GONE}"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        android:background="@drawable/shape_squircle_white_background"
+                        app:layout_constraintWidth_max="@dimen/section_max_width"
                         app:layout_constraintTop_toBottomOf="@id/numbers_and_addresses"
-                        app:layout_constraintBottom_toBottomOf="@id/title_label"/>
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/header_style"
-                        android:id="@+id/company_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:text="@string/contact_details_company_name"
-                        app:layout_constraintStart_toStartOf="@id/info_background"
-                        app:layout_constraintTop_toTopOf="@id/info_background"/>
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/header_style"
+                            android:id="@+id/company_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:text="@string/contact_details_company_name"
+                            android:visibility="@{viewModel.company.length() > 0 ? View.VISIBLE : View.GONE}"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"/>
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/default_text_style"
-                        android:id="@+id/company"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:text="@{viewModel.company, default=`Belledonne Comm`}"
-                        android:textSize="14sp"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        app:layout_constraintStart_toEndOf="@id/company_label"
-                        app:layout_constraintEnd_toEndOf="@id/info_background"
-                        app:layout_constraintTop_toTopOf="@id/info_background"/>
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/default_text_style"
+                            android:id="@+id/company"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:text="@{viewModel.company, default=`Belledonne Comm`}"
+                            android:textSize="14sp"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:visibility="@{viewModel.company.length() > 0 ? View.VISIBLE : View.GONE}"
+                            app:layout_constraintStart_toEndOf="@id/company_label"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"/>
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/header_style"
-                        android:id="@+id/title_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:text="@string/contact_details_job_title"
-                        app:layout_constraintStart_toStartOf="@id/info_background"
-                        app:layout_constraintTop_toBottomOf="@id/company"/>
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/header_style"
+                            android:id="@+id/title_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:text="@string/contact_details_job_title"
+                            android:visibility="@{viewModel.title.length() > 0 ? View.VISIBLE : View.GONE}"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/company"/>
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/default_text_style"
-                        android:id="@+id/title"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:text="@{viewModel.title, default=`Android developer`}"
-                        android:textSize="14sp"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        app:layout_constraintEnd_toEndOf="@id/info_background"
-                        app:layout_constraintStart_toEndOf="@id/title_label"
-                        app:layout_constraintTop_toBottomOf="@id/company"/>
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/default_text_style"
+                            android:id="@+id/title"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:text="@{viewModel.title, default=`Android developer`}"
+                            android:textSize="14sp"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:visibility="@{viewModel.title.length() > 0 ? View.VISIBLE : View.GONE}"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/title_label"
+                            app:layout_constraintTop_toBottomOf="@id/company"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/section_header_style"
@@ -386,7 +376,6 @@
                         android:onClick="@{() -> viewModel.displayTrustDialog()}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
                         android:layout_marginTop="16dp"
                         android:padding="10dp"
                         android:text="@string/contact_details_trust_title"
@@ -395,8 +384,8 @@
                         android:drawablePadding="8dp"
                         android:background="@drawable/squircle_transparent_button_background"
                         android:visibility="@{viewModel.showContactTrustAndDevices ? View.VISIBLE : View.GONE, default=gone}"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/info_background"/>
+                        app:layout_constraintStart_toStartOf="@id/devices_trust"
+                        app:layout_constraintTop_toBottomOf="@id/contact_job_info"/>
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/section_header_style"
@@ -404,134 +393,132 @@
                         android:onClick="@{() -> viewModel.toggleDevicesTrustExpand()}"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="20dp"
-                        android:layout_marginTop="16dp"
                         android:padding="10dp"
                         android:drawableEnd="@{viewModel.expandDevicesTrust ? @drawable/caret_up : @drawable/caret_down, default=@drawable/caret_up}"
                         android:drawableTint="?attr/color_main2_600"
                         android:background="@drawable/squircle_transparent_button_background"
                         android:visibility="@{viewModel.showContactTrustAndDevices ? View.VISIBLE : View.GONE, default=gone}"
                         app:layout_constraintStart_toEndOf="@id/trust_label"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/info_background"/>
-
-                    <androidx.constraintlayout.widget.Barrier
-                        android:id="@+id/trust_background_bottom_barrier"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:barrierDirection="bottom"
-                        app:constraint_referenced_ids="devices, no_device_label" />
-
-                    <ImageView
-                        android:id="@+id/trust_background"
+                        app:layout_constraintEnd_toEndOf="@id/devices_trust"
+                        app:layout_constraintBottom_toTopOf="@id/devices_trust"/>
+                
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/devices_trust"
                         android:layout_width="0dp"
-                        android:layout_height="0dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
-                        android:src="@drawable/shape_squircle_white_background"
-                        android:contentDescription="@null"
-                        android:visibility="@{viewModel.expandDevicesTrust ? View.VISIBLE : View.GONE}"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        android:background="@drawable/shape_squircle_white_background"
+                        android:visibility="@{viewModel.expandDevicesTrust ? View.VISIBLE : View.INVISIBLE}"
+                        app:layout_constraintWidth_max="@dimen/section_max_width"
                         app:layout_constraintTop_toBottomOf="@id/trust_label"
-                        app:layout_constraintBottom_toBottomOf="@id/trust_background_bottom_barrier"/>
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/header_style"
-                        android:id="@+id/trusted_devices_count"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginTop="20dp"
-                        android:text="@string/contact_details_trusted_devices_count"
-                        app:layout_constraintStart_toStartOf="@id/trust_background"
-                        app:layout_constraintEnd_toEndOf="@id/trust_background"
-                        app:layout_constraintTop_toTopOf="@id/trust_background" />
-
-                    <View
-                        android:id="@+id/trusted_devices_progress_background"
-                        android:layout_width="0dp"
-                        android:layout_height="28dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="@drawable/shape_squircle_contact_trust_r50_background"
-                        app:layout_constraintStart_toStartOf="@id/trust_background"
-                        app:layout_constraintEnd_toEndOf="@id/trust_background"
-                        app:layout_constraintTop_toBottomOf="@id/trusted_devices_count" />
-
-                    <com.google.android.material.progressindicator.LinearProgressIndicator
-                        android:id="@+id/trusted_devices_progress"
-                        android:layout_width="0dp"
-                        android:layout_height="24dp"
-                        android:layout_marginStart="3dp"
-                        android:layout_marginEnd="3dp"
-                        android:max="100"
-                        android:progress="@{viewModel.trustedDevicesPercentage, default=20}"
-                        app:trackCornerRadius="50dp"
-                        app:trackThickness="22dp"
-                        app:trackColor="@color/transparent_color"
-                        app:indicatorColor="?attr/color_trust_track"
-                        app:trackStopIndicatorSize="0dp"
-                        app:layout_constraintStart_toStartOf="@id/trusted_devices_progress_background"
-                        app:layout_constraintEnd_toEndOf="@id/trusted_devices_progress_background"
-                        app:layout_constraintTop_toTopOf="@id/trusted_devices_progress_background"
-                        app:layout_constraintBottom_toBottomOf="@id/trusted_devices_progress_background"/>
-
-                    <View
-                        android:id="@+id/trusted_devices_progress_label_anchor"
-                        android:layout_width="1dp"
-                        android:layout_height="1dp"
-                        app:layout_constraintHorizontal_bias="@{viewModel.trustedDevicesPercentageFloat, default=0.1}"
-                        app:layout_constraintStart_toStartOf="@id/trusted_devices_progress"
-                        app:layout_constraintEnd_toEndOf="@id/trusted_devices_progress"
-                        app:layout_constraintTop_toTopOf="@id/trusted_devices_progress"
-                        app:layout_constraintBottom_toBottomOf="@id/trusted_devices_progress" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/default_text_style_700"
-                        android:id="@+id/trusted_devices_progress_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="5dp"
-                        android:text="@{String.valueOf(viewModel.trustedDevicesPercentage) + `%`, default=`20%`}"
-                        android:textColor="@{viewModel.trustedDevicesPercentage > 15 ? @color/bc_white : @color/red_danger_500_night, default=@color/bc_white}"
-                        android:textSize="12sp"
-                        app:layout_constraintStart_toStartOf="@id/trusted_devices_progress_label_anchor"
-                        app:layout_constraintEnd_toEndOf="@id/trusted_devices_progress_label_anchor"
-                        app:layout_constraintTop_toTopOf="@id/trusted_devices_progress"
-                        app:layout_constraintBottom_toBottomOf="@id/trusted_devices_progress" />
-
-                    <LinearLayout
-                        android:id="@+id/devices"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:padding="10dp"
-                        app:entries="@{viewModel.devices}"
-                        app:layout="@{@layout/contact_device_trust_list_cell}"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/trusted_devices_progress" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/default_text_style_700"
-                        android:id="@+id/no_device_label"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:padding="10dp"
-                        android:text="@string/contact_details_no_device_found"
-                        android:visibility="@{viewModel.expandDevicesTrust &amp;&amp; viewModel.devices.empty ? View.VISIBLE : View.GONE, default=gone}"
-                        app:layout_constraintStart_toStartOf="@id/trust_background"
-                        app:layout_constraintEnd_toEndOf="@id/trust_background"
-                        app:layout_constraintTop_toTopOf="@id/trust_background"
-                        app:layout_constraintBottom_toBottomOf="@id/trust_background" />
+                        app:layout_constraintEnd_toEndOf="parent">
+    
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/header_style"
+                            android:id="@+id/trusted_devices_count"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/contact_details_trusted_devices_count"
+                            android:visibility="@{viewModel.showContactTrustAndDevices ? (viewModel.expandDevicesTrust &amp;&amp; viewModel.devices.size() > 0 ? View.VISIBLE : View.GONE) : View.GONE, default=gone}"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+    
+                        <View
+                            android:id="@+id/trusted_devices_progress_background"
+                            android:layout_width="0dp"
+                            android:layout_height="28dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:background="@drawable/shape_squircle_contact_trust_r50_background"
+                            android:visibility="@{viewModel.showContactTrustAndDevices ? (viewModel.expandDevicesTrust &amp;&amp; viewModel.devices.size() > 0 ? View.VISIBLE : View.GONE) : View.GONE, default=gone}"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/trusted_devices_count" />
+    
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
+                            android:id="@+id/trusted_devices_progress"
+                            android:layout_width="0dp"
+                            android:layout_height="24dp"
+                            android:layout_marginStart="3dp"
+                            android:layout_marginEnd="3dp"
+                            android:max="100"
+                            android:progress="@{viewModel.trustedDevicesPercentage, default=20}"
+                            android:visibility="@{viewModel.showContactTrustAndDevices ? (viewModel.expandDevicesTrust &amp;&amp; viewModel.devices.size() > 0 ? View.VISIBLE : View.GONE) : View.GONE, default=gone}"
+                            app:trackCornerRadius="50dp"
+                            app:trackThickness="22dp"
+                            app:trackColor="@color/transparent_color"
+                            app:indicatorColor="?attr/color_trust_track"
+                            app:trackStopIndicatorSize="0dp"
+                            app:layout_constraintStart_toStartOf="@id/trusted_devices_progress_background"
+                            app:layout_constraintEnd_toEndOf="@id/trusted_devices_progress_background"
+                            app:layout_constraintTop_toTopOf="@id/trusted_devices_progress_background"
+                            app:layout_constraintBottom_toBottomOf="@id/trusted_devices_progress_background"/>
+    
+                        <View
+                            android:id="@+id/trusted_devices_progress_label_anchor"
+                            android:layout_width="1dp"
+                            android:layout_height="1dp"
+                            app:layout_constraintHorizontal_bias="@{viewModel.trustedDevicesPercentageFloat, default=0.1}"
+                            app:layout_constraintStart_toStartOf="@id/trusted_devices_progress"
+                            app:layout_constraintEnd_toEndOf="@id/trusted_devices_progress"
+                            app:layout_constraintTop_toTopOf="@id/trusted_devices_progress"
+                            app:layout_constraintBottom_toBottomOf="@id/trusted_devices_progress" />
+    
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/default_text_style_700"
+                            android:id="@+id/trusted_devices_progress_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginEnd="5dp"
+                            android:text="@{String.valueOf(viewModel.trustedDevicesPercentage) + `%`, default=`20%`}"
+                            android:textColor="@{viewModel.trustedDevicesPercentage > 15 ? @color/bc_white : @color/red_danger_500_night, default=@color/bc_white}"
+                            android:textSize="12sp"
+                            android:visibility="@{viewModel.showContactTrustAndDevices ? (viewModel.expandDevicesTrust &amp;&amp; viewModel.devices.size() > 0 ? View.VISIBLE : View.GONE) : View.GONE, default=gone}"
+                            app:layout_constraintStart_toStartOf="@id/trusted_devices_progress_label_anchor"
+                            app:layout_constraintEnd_toEndOf="@id/trusted_devices_progress_label_anchor"
+                            app:layout_constraintTop_toTopOf="@id/trusted_devices_progress"
+                            app:layout_constraintBottom_toBottomOf="@id/trusted_devices_progress" />
+    
+                        <LinearLayout
+                            android:id="@+id/devices"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="10dp"
+                            android:visibility="@{viewModel.showContactTrustAndDevices ? (viewModel.expandDevicesTrust &amp;&amp; viewModel.devices.size() > 0 ? View.VISIBLE : View.GONE) : View.GONE, default=gone}"
+                            app:entries="@{viewModel.devices}"
+                            app:layout="@{@layout/contact_device_trust_list_cell}"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/trusted_devices_progress"
+                            app:layout_constraintBottom_toBottomOf="parent"/>
+    
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/default_text_style_700"
+                            android:id="@+id/no_device_label"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:padding="10dp"
+                            android:text="@string/contact_details_no_device_found"
+                            android:visibility="@{viewModel.expandDevicesTrust &amp;&amp; viewModel.devices.empty ? View.VISIBLE : View.GONE, default=gone}"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+                        
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/section_header_style"
@@ -543,9 +530,10 @@
                         android:layout_marginEnd="20dp"
                         android:layout_marginTop="16dp"
                         android:text="@string/contact_details_actions_title"
+                        app:layout_constraintWidth_max="@dimen/section_max_width"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/trust_background"/>
+                        app:layout_constraintTop_toBottomOf="@id/devices_trust"/>
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/context_menu_action_label_style"
@@ -559,6 +547,7 @@
                         android:drawableStart="@drawable/pencil_simple"
                         android:background="@drawable/action_background_top"
                         android:visibility="@{viewModel.isStored &amp;&amp; !viewModel.isReadOnly ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintWidth_max="@dimen/section_max_width"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/actions"/>
@@ -576,6 +565,7 @@
                         android:text="@{viewModel.isFavourite ? @string/contact_details_remove_from_favourites : @string/contact_details_add_to_favourites, default=@string/contact_details_add_to_favourites}"
                         android:drawableStart="@{viewModel.isFavourite ? @drawable/heart_fill : @drawable/heart, default=@drawable/heart_fill}"
                         android:drawableTint="@{viewModel.isFavourite ? @color/danger_500 : @color/main2_500, default=@color/danger_500}"
+                        app:layout_constraintWidth_max="@dimen/section_max_width"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/action_edit" />
@@ -591,6 +581,7 @@
                         android:background="@{viewModel.isStored &amp;&amp; !viewModel.isReadOnly ? (viewModel.isNative ? @drawable/action_background_bottom : @drawable/action_background_middle) : @drawable/action_background_full, default=@drawable/action_background_middle}"
                         android:text="@string/contact_details_share"
                         android:drawableStart="@drawable/share_network"
+                        app:layout_constraintWidth_max="@dimen/section_max_width"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/action_favorite"/>
@@ -607,6 +598,7 @@
                         android:text="@string/contact_details_delete"
                         android:drawableStart="@drawable/trash_simple"
                         android:visibility="@{viewModel.isStored &amp;&amp; !viewModel.isReadOnly &amp;&amp; !viewModel.isNative ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintWidth_max="@dimen/section_max_width"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/action_share"/>

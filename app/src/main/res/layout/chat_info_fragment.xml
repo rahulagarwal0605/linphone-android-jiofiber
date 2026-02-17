@@ -106,6 +106,7 @@
                     android:layout_marginTop="20dp"
                     android:paddingBottom="10dp"
                     android:background="@drawable/shape_squircle_white_background"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -219,6 +220,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginTop="20dp"
                     android:background="@drawable/shape_squircle_white_background"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintTop_toBottomOf="@id/avatar_content"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
@@ -352,61 +354,62 @@
                     android:text="@{viewModel.participantsLabel, default=@string/conversation_info_participants_list_title}"
                     android:visibility="@{viewModel.isGroup ? View.VISIBLE : View.GONE}"
                     android:background="@drawable/squircle_transparent_button_background"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/call_actions" />
 
-                <View
-                    android:id="@+id/participants_background"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="-16dp"
-                    android:background="@drawable/shape_squircle_white_background"
-                    android:visibility="@{!viewModel.expandParticipants || !viewModel.isMyselfAdmin || !viewModel.isGroup || viewModel.isReadOnly ? View.GONE : View.VISIBLE, default=gone}"
-                    app:layout_constraintBottom_toBottomOf="@id/add_participants"
-                    app:layout_constraintTop_toTopOf="@id/participants" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/participants"
-                    android:layout_width="match_parent"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/participants_list"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:background="@drawable/shape_squircle_white_background"
-                    android:nestedScrollingEnabled="true"
-                    android:visibility="@{viewModel.expandParticipants &amp;&amp; viewModel.isGroup ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintBottom_toTopOf="@id/add_participants"
-                    app:layout_constrainedHeight="true"
-                    app:layout_constraintTop_toBottomOf="@id/participants_label"/>
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/add_participants"
-                    style="@style/tertiary_button_label_style"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/tertiary_button_background"
-                    android:drawableStart="@drawable/plus_circle"
-                    android:drawablePadding="8dp"
-                    android:ellipsize="end"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:onClick="@{addParticipantsClickListener}"
-                    android:paddingStart="16dp"
-                    android:paddingTop="10dp"
-                    android:paddingEnd="16dp"
-                    android:paddingBottom="10dp"
-                    android:text="@string/conversation_info_add_participants_label"
                     android:visibility="@{!viewModel.expandParticipants || !viewModel.isMyselfAdmin || !viewModel.isGroup || viewModel.isReadOnly ? View.GONE : View.VISIBLE, default=gone}"
-                    app:drawableTint="?attr/color_main1_500"
-                    app:layout_constraintBottom_toTopOf="@id/media_documents_actions"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:background="@drawable/shape_squircle_white_background"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
+                    app:layout_constraintTop_toBottomOf="@id/participants_label"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/participants" />
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/participants"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/shape_squircle_white_background"
+                        android:nestedScrollingEnabled="true"
+                        android:visibility="@{viewModel.expandParticipants &amp;&amp; viewModel.isGroup ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/add_participants"
+                        app:layout_constrainedHeight="true"/>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/add_participants"
+                        style="@style/tertiary_button_label_style"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/tertiary_button_background"
+                        android:drawableStart="@drawable/plus_circle"
+                        android:drawablePadding="8dp"
+                        android:ellipsize="end"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:onClick="@{addParticipantsClickListener}"
+                        android:paddingStart="16dp"
+                        android:paddingTop="10dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="10dp"
+                        android:text="@string/conversation_info_add_participants_label"
+                        android:visibility="@{!viewModel.expandParticipants || !viewModel.isMyselfAdmin || !viewModel.isGroup || viewModel.isReadOnly ? View.GONE : View.VISIBLE, default=gone}"
+                        app:drawableTint="?attr/color_main1_500"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/participants"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/media_documents_actions"
@@ -418,10 +421,11 @@
                     android:layout_marginEnd="20dp"
                     android:padding="5dp"
                     android:text="@string/conversation_details_media_documents_title"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintBottom_toTopOf="@id/action_media"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/add_participants" />
+                    app:layout_constraintTop_toBottomOf="@id/participants_list" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/action_media"
@@ -434,6 +438,7 @@
                     android:drawableStart="@drawable/image"
                     android:onClick="@{goToSharedMediaClickListener}"
                     android:text="@string/conversation_media_list_title"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/media_documents_actions" />
@@ -450,6 +455,7 @@
                     android:drawableStart="@drawable/file_pdf"
                     android:onClick="@{goToSharedDocumentsClickListener}"
                     android:text="@string/conversation_document_list_title"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/action_media" />
@@ -475,6 +481,7 @@
                     android:layout_marginEnd="20dp"
                     android:padding="5dp"
                     android:text="@string/contact_details_actions_title"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/action_documents" />
@@ -491,6 +498,7 @@
                     android:onClick="@{goToContactClickListener}"
                     android:text="@string/conversation_info_menu_go_to_contact"
                     android:visibility="@{!viewModel.isGroup &amp;&amp; viewModel.friendAvailable ? View.VISIBLE : View.GONE, default=gone}"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/other_actions" />
@@ -507,6 +515,7 @@
                     android:onClick="@{addToContactsClickListener}"
                     android:text="@string/conversation_info_menu_add_to_contacts"
                     android:visibility="@{!viewModel.isGroup &amp;&amp; !viewModel.friendAvailable &amp;&amp; !viewModel.disableAddContact ? View.VISIBLE : View.GONE, default=gone}"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/action_see_contact" />
@@ -523,6 +532,7 @@
                     android:onClick="@{configureEphemeralMessagesClickListener}"
                     android:text="@string/conversation_action_configure_ephemeral_messages"
                     android:visibility="@{viewModel.isEndToEndEncrypted &amp;&amp; !viewModel.isReadOnly ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/action_add_to_contacts" />
@@ -539,6 +549,7 @@
                     android:onClick="@{() -> viewModel.leaveGroup()}"
                     android:text="@string/conversation_action_leave_group"
                     android:visibility="@{viewModel.isGroup &amp;&amp; !viewModel.isReadOnly ? View.VISIBLE : View.GONE, default=gone}"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/action_ephemeral_messages" />
@@ -554,6 +565,7 @@
                     android:drawableStart="@drawable/trash_simple"
                     android:onClick="@{deleteHistoryClickListener}"
                     android:text="@string/conversation_info_delete_history_action"
+                    app:layout_constraintWidth_max="@dimen/section_max_width"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/action_leave_group" />
