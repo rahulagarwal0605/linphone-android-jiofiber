@@ -108,7 +108,7 @@ class NotificationsManager
         private const val ACCOUNT_ERROR_TAG = "Account Error"
 
         private const val MISSED_CALL_TAG = "Missed call"
-        const val CHAT_NOTIFICATIONS_GROUP = "CHAT_NOTIF_GROUP"
+        private const val CHAT_NOTIFICATIONS_GROUP = "CHAT_NOTIF_GROUP"
 
         private const val INCOMING_CALL_ID = 1
         private const val DUMMY_NOTIF_ID = 3
@@ -1329,6 +1329,7 @@ class NotificationsManager
         return notifiableMessage
     }
 
+    @SuppressLint("FullScreenIntentPolicy")
     @WorkerThread
     private fun createCallNotification(
         call: Call,
@@ -1425,6 +1426,7 @@ class NotificationsManager
                 setPriority(NotificationCompat.PRIORITY_HIGH)
             }
             setWhen(call.callLog.startDate * 1000) // Linphone timestamps are in seconds
+            setShowWhen(true)
             setAutoCancel(false)
             setOngoing(true)
             setContentIntent(pendingIntent)
