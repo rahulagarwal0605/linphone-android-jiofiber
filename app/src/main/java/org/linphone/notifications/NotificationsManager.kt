@@ -110,7 +110,6 @@ class NotificationsManager
         private const val MISSED_CALL_TAG = "Missed call"
         private const val CHAT_NOTIFICATIONS_GROUP = "CHAT_NOTIF_GROUP"
 
-        private const val INCOMING_CALL_ID = 1
         private const val DUMMY_NOTIF_ID = 3
         private const val KEEP_ALIVE_FOR_THIRD_PARTY_ACCOUNTS_ID = 5
         private const val ACCOUNT_REGISTRATION_ERROR_ID = 7
@@ -224,14 +223,8 @@ class NotificationsManager
                     showCallNotification(call, false)
                 }
                 Call.State.Connected -> {
-                    if (call.dir == Call.Dir.Incoming) {
-                        Log.i(
-                            "$TAG Connected call was incoming (so it was answered), removing incoming call notification"
-                        )
-                        removeIncomingCallNotification()
-                    }
                     Log.i(
-                        "$TAG Showing connected call notification for [${call.remoteAddress.asStringUriOnly()}]"
+                        "$TAG Updating incoming call notification to active call for [${call.remoteAddress.asStringUriOnly()}]"
                     )
                     showCallNotification(call, false)
                 }
@@ -257,7 +250,7 @@ class NotificationsManager
                             Log.w("$TAG We are waiting for service to be started as foreground, starting it now")
                             showCallNotification(call, false)
                         }
-                        removeIncomingCallNotification()
+                        removeIncomingCallNotificationIfAny(call)
                     } else {
                         Log.i(
                             "$TAG Removing terminated/declined call notification for [${remoteSipAddress.asStringUriOnly()}]"
@@ -681,8 +674,11 @@ class NotificationsManager
     }
 
     @WorkerThread
-    fun removeIncomingCallNotification() {
-        if (currentInCallServiceNotificationId == INCOMING_CALL_ID) {
+    fun removeIncomingCallNotificationIfAny(call: Call) {
+        val notifiable = getNotifiableForCall(call)
+        val notificationId = notifiable.notificationId
+
+        if (currentInCallServiceNotificationId == notificationId) {
             if (inCallService != null) {
                 Log.i(
                     "$TAG Service found, stopping it as foreground before cancelling notification"
@@ -698,7 +694,7 @@ class NotificationsManager
             )
         }
 
-        cancelNotification(INCOMING_CALL_ID)
+        cancelNotification(notificationId)
         currentlyRingingCallRemoteAddress = null
     }
 
@@ -735,9 +731,9 @@ class NotificationsManager
             currentlyRingingCallRemoteAddress = call.remoteAddress
             if (currentInCallServiceNotificationId == -1) {
                 Log.i("$TAG No current in-call foreground service notification found, using this one")
-                showIncomingCallForegroundServiceNotification(notification)
+                showIncomingCallForegroundServiceNotification(notifiable.notificationId, notification)
             } else {
-                notify(INCOMING_CALL_ID, notification)
+                notify(notifiable.notificationId, notification)
             }
         } else {
             if (currentInCallServiceNotificationId == -1) {
@@ -797,27 +793,27 @@ class NotificationsManager
     }
 
     @WorkerThread
-    private fun showIncomingCallForegroundServiceNotification(notification: Notification) {
+    private fun showIncomingCallForegroundServiceNotification(notificationId: Int, notification: Notification) {
         Log.i("$TAG Trying to start foreground Service using incoming call notification")
         val service = inCallService
         if (service != null) {
             if (Compatibility.isPostNotificationsPermissionGranted(context)) {
                 Log.i(
-                    "$TAG Service found, starting it as foreground using notification ID [$INCOMING_CALL_ID] with type PHONE_CALL"
+                    "$TAG Service found, starting it as foreground using notification ID [$notificationId] with type PHONE_CALL"
                 )
                 val success = Compatibility.startServiceForeground(
                     service,
-                    INCOMING_CALL_ID,
+                    notificationId,
                     notification,
                     Compatibility.FOREGROUND_SERVICE_TYPE_PHONE_CALL
                 )
                 if (!success) {
                     Log.e("$TAG Failed to start incoming call foreground service!")
                 }
-                notificationsMap[INCOMING_CALL_ID] = notification
-                currentInCallServiceNotificationId = INCOMING_CALL_ID
+                notificationsMap[notificationId] = notification
+                currentInCallServiceNotificationId = notificationId
                 inCallServiceForegroundNotificationPublished = true
-                Log.i("$TAG Incoming call notification with ID [$INCOMING_CALL_ID] has been used to start service as foreground")
+                Log.i("$TAG Incoming call notification with ID [$notificationId] has been used to start service as foreground")
 
                 if (waitForInCallServiceForegroundToStopIt) {
                     Log.i("$TAG We were waiting for foreground service to be started to stop it, doing it")
@@ -833,14 +829,15 @@ class NotificationsManager
 
     @WorkerThread
     private fun startInCallForegroundService(call: Call) {
+        val notifiable = getNotifiableForCall(call)
+        val notificationId = notifiable.notificationId
+
         if (LinphoneUtils.isCallIncoming(call.state)) {
-            val notification = notificationsMap[INCOMING_CALL_ID]
+            val notification = notificationsMap[notificationId]
             if (notification != null) {
-                showIncomingCallForegroundServiceNotification(notification)
+                showIncomingCallForegroundServiceNotification(notificationId, notification)
             } else {
-                Log.w(
-                    "$TAG Failed to find notification for incoming call with ID [$INCOMING_CALL_ID]"
-                )
+                Log.w("$TAG Failed to find notification for incoming call with ID [$notificationId]")
             }
             return
         }
@@ -861,12 +858,8 @@ class NotificationsManager
             return
         }
 
-        val notifiable = getNotifiableForCall(call)
-        val notificationId = notifiable.notificationId
         val notification = if (notificationsMap.containsKey(notificationId)) {
             notificationsMap[notificationId]
-        } else if (notificationsMap.containsKey(INCOMING_CALL_ID)) {
-            notificationsMap[INCOMING_CALL_ID]
         } else {
             Log.w("$TAG Failed to find a notification for call [${call.remoteAddress.asStringUriOnly()}] in map")
             null
@@ -992,7 +985,7 @@ class NotificationsManager
                 if (!success) {
                     Log.e("$TAG Failed to start dummy call foreground service!")
                 }
-                notificationsMap[INCOMING_CALL_ID] = notification
+                notificationsMap[DUMMY_NOTIF_ID] = notification
                 currentInCallServiceNotificationId = DUMMY_NOTIF_ID
                 inCallServiceForegroundNotificationPublished = true
                 Log.i("$TAG Dummy notification with ID [$DUMMY_NOTIF_ID] has been used to start service as foreground")
@@ -1462,14 +1455,11 @@ class NotificationsManager
     ) {
         val isIncoming = LinphoneUtils.isCallIncoming(call.state)
 
-        val notification = if (isIncoming) {
-            notificationsMap[INCOMING_CALL_ID]
-        } else {
-            notificationsMap[notifiable.notificationId]
-        }
+        val notificationId = notifiable.notificationId
+        val notification = notificationsMap[notificationId]
         if (notification == null) {
             Log.w(
-                "$TAG Failed to find notification with ID [${notifiable.notificationId}], creating a new one"
+                "$TAG Failed to find notification with ID [$notificationId], creating a new one"
             )
             showCallNotification(call, isIncoming, friend)
             return
@@ -1485,16 +1475,16 @@ class NotificationsManager
         )
         if (isIncoming) {
             if (!currentlyDisplayedIncomingCallFragment) {
-                Log.i("$TAG Updating incoming call notification with ID [$INCOMING_CALL_ID]")
-                notify(INCOMING_CALL_ID, newNotification)
+                Log.i("$TAG Updating incoming call notification with ID [$notificationId]")
+                notify(notificationId, newNotification)
             } else {
                 Log.i(
                     "$TAG Incoming call fragment is visible, do not re-send an incoming call notification"
                 )
             }
         } else {
-            Log.i("$TAG Updating call notification with ID [${notifiable.notificationId}]")
-            notify(notifiable.notificationId, newNotification)
+            Log.i("$TAG Updating call notification with ID [$notificationId]")
+            notify(notificationId, newNotification)
         }
     }
 
