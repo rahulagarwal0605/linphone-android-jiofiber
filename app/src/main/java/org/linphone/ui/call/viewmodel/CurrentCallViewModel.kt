@@ -1553,27 +1553,39 @@ class CurrentCallViewModel
     }
 
     @WorkerThread
-    private fun updateProximitySensor() {
+    fun updateProximitySensor() {
         if (::currentCall.isInitialized) {
             val callState = currentCall.state
+            Log.i("$TAG Call is in state [$callState], enabling/disabling proximity sensor if needed")
+
             if (LinphoneUtils.isCallIncoming(callState)) {
+                Log.i("$TAG Call is incoming, disabling proximity sensor")
                 proximitySensorEnabled.postValue(false)
             } else if (LinphoneUtils.isCallOutgoing(callState)) {
                 val videoEnabled = currentCall.params.isVideoEnabled
+                if (videoEnabled) {
+                    Log.i("$TAG Call is outgoing and video is enabled, disabling proximity sensor")
+                } else {
+                    Log.i("$TAG Call is outgoing and video is disabled, enabling proximity sensor")
+                }
                 proximitySensorEnabled.postValue(!videoEnabled)
             } else {
                 if (isSendingVideo.value == true || isReceivingVideo.value == true) {
+                    Log.i("$TAG Video is being sent and/or received, disabling proximity sensor")
                     proximitySensorEnabled.postValue(false)
                 } else {
                     val outputAudioDevice = currentCall.outputAudioDevice ?: coreContext.core.outputAudioDevice
                     if (outputAudioDevice != null && outputAudioDevice.type == AudioDevice.Type.Earpiece) {
+                        Log.i("$TAG Audio device is earpiece, enabling proximity sensor")
                         proximitySensorEnabled.postValue(true)
                     } else {
+                        Log.i("$TAG Audio device is [${outputAudioDevice?.type}], disabling proximity sensor")
                         proximitySensorEnabled.postValue(false)
                     }
                 }
             }
         } else {
+            Log.w("$TAG No current call, disabling proximity sensor")
             proximitySensorEnabled.postValue(false)
         }
     }

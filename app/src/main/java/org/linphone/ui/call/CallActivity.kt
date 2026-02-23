@@ -384,6 +384,7 @@ class CallActivity : GenericActivity() {
 
         coreContext.postOnCoreThread {
             coreContext.notificationsManager.showInCallForegroundServiceNotificationIfNeeded()
+            callViewModel.updateProximitySensor()
         }
     }
 
