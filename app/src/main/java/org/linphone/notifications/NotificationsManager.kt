@@ -106,6 +106,7 @@ class NotificationsManager
         const val CHAT_TAG = "Chat"
 
         private const val ACCOUNT_ERROR_TAG = "Account Error"
+        private const val IN_CALL_ERROR_TAG = "Call Error"
 
         private const val MISSED_CALL_TAG = "Missed call"
         private const val CHAT_NOTIFICATIONS_GROUP = "CHAT_NOTIF_GROUP"
@@ -113,6 +114,7 @@ class NotificationsManager
         private const val DUMMY_NOTIF_ID = 3
         private const val KEEP_ALIVE_FOR_THIRD_PARTY_ACCOUNTS_ID = 5
         private const val ACCOUNT_REGISTRATION_ERROR_ID = 7
+        private const val IN_CALL_FOREGROUND_SERVICE_ERROR_ID = 8
         private const val MISSED_CALL_ID = 10
     }
 
@@ -226,13 +228,14 @@ class NotificationsManager
                     Log.i(
                         "$TAG Updating incoming call notification to active call for [${call.remoteAddress.asStringUriOnly()}]"
                     )
+                    currentlyRingingCallRemoteAddress = null
                     showCallNotification(call, false)
                 }
                 Call.State.StreamsRunning -> {
                     val notifiable = getNotifiableForCall(call)
                     if (notifiable.notificationId == currentInCallServiceNotificationId) {
                         Log.i(
-                            "$TAG Update foreground service type in case video was enabled/disabled since last time"
+                            "$TAG Update foreground Service type in case video was enabled/disabled since last time"
                         )
                         startInCallForegroundService(call)
                     }
@@ -282,11 +285,16 @@ class NotificationsManager
         override fun onLastCallEnded(core: Core) {
             Log.i("$TAG Last call ended")
             if (inCallServiceForegroundNotificationPublished) {
-                Log.i("$TAG Stopping foreground service")
+                Log.i("$TAG Stopping foreground Service")
                 stopInCallForegroundService()
             } else {
                 Log.i("$TAG In-Call service was never started as foreground, waiting for it to be started to stop it")
                 waitForInCallServiceForegroundToStopIt = true
+            }
+
+            if (notificationsMap.containsKey(IN_CALL_FOREGROUND_SERVICE_ERROR_ID)) {
+                Log.i("$TAG Removing in-call foreground Service error notification")
+                cancelNotification(IN_CALL_FOREGROUND_SERVICE_ERROR_ID, IN_CALL_ERROR_TAG)
             }
         }
 
@@ -674,6 +682,26 @@ class NotificationsManager
     }
 
     @WorkerThread
+    fun showInCallForegroundServiceNotificationIfNeeded() {
+        if (currentInCallServiceNotificationId == -1) {
+            Log.w("$TAG No current in-call foreground Service notification found, try to create it now")
+            val call = coreContext.core.currentCall ?: coreContext.core.calls.find {
+                LinphoneUtils.isCallActive(it.state)
+            } ?: coreContext.core.calls.find {
+                LinphoneUtils.isCallPaused(it.state)
+            }
+            if (call != null) {
+                Log.i("$TAG Using call [${call.remoteAddress.asStringUriOnly()}] for foreground Service notification")
+                showCallNotification(call, LinphoneUtils.isCallIncoming(call.state))
+            } else {
+                Log.w("$TAG No active call found for foreground Service notification, aborting")
+            }
+        } else {
+            Log.i("$TAG There is already a foreground Service notification for a call, nothing to do")
+        }
+    }
+
+    @WorkerThread
     fun removeIncomingCallNotificationIfAny(call: Call) {
         val notifiable = getNotifiableForCall(call)
         val notificationId = notifiable.notificationId
@@ -730,14 +758,14 @@ class NotificationsManager
         if (isIncoming) {
             currentlyRingingCallRemoteAddress = call.remoteAddress
             if (currentInCallServiceNotificationId == -1) {
-                Log.i("$TAG No current in-call foreground service notification found, using this one")
+                Log.i("$TAG No current in-call foreground Service notification found, using this one")
                 showIncomingCallForegroundServiceNotification(notifiable.notificationId, notification)
             } else {
                 notify(notifiable.notificationId, notification)
             }
         } else {
             if (currentInCallServiceNotificationId == -1) {
-                Log.i("$TAG No current in-call foreground service notification found, using this one")
+                Log.i("$TAG No current in-call foreground Service notification found, using this one")
                 showInCallForegroundServiceNotification(call, notifiable, notification)
             } else {
                 notify(notifiable.notificationId, notification)
@@ -807,20 +835,21 @@ class NotificationsManager
                     notification,
                     Compatibility.FOREGROUND_SERVICE_TYPE_PHONE_CALL
                 )
-                if (!success) {
-                    Log.e("$TAG Failed to start incoming call foreground service!")
-                }
-                notificationsMap[notificationId] = notification
-                currentInCallServiceNotificationId = notificationId
-                inCallServiceForegroundNotificationPublished = true
-                Log.i("$TAG Incoming call notification with ID [$notificationId] has been used to start service as foreground")
+                if (success) {
+                    notificationsMap[notificationId] = notification
+                    currentInCallServiceNotificationId = notificationId
+                    inCallServiceForegroundNotificationPublished = true
+                    Log.i("$TAG Incoming call notification with ID [$notificationId] has been used to start service as foreground")
 
-                if (waitForInCallServiceForegroundToStopIt) {
-                    Log.i("$TAG We were waiting for foreground service to be started to stop it, doing it")
-                    stopInCallForegroundService()
+                    if (waitForInCallServiceForegroundToStopIt) {
+                        Log.i("$TAG We were waiting for foreground Service to be started to stop it, doing it")
+                        stopInCallForegroundService()
+                    }
+                } else {
+                    Log.e("$TAG Failed to start incoming call foreground Service!")
                 }
             } else {
-                Log.e("$TAG POST_NOTIFICATIONS permission isn't granted, don't start foreground service!")
+                Log.e("$TAG POST_NOTIFICATIONS permission isn't granted, don't start foreground Service!")
             }
         } else {
             Log.w("$TAG Core Foreground Service hasn't started yet...")
@@ -853,7 +882,7 @@ class NotificationsManager
         val channel = notificationManager.getNotificationChannel(channelId)
         val importance = channel?.importance ?: NotificationManagerCompat.IMPORTANCE_NONE
         if (importance == NotificationManagerCompat.IMPORTANCE_NONE) {
-            Log.e("$TAG Calls channel has been disabled, can't start foreground service!")
+            Log.e("$TAG Calls channel has been disabled, can't start foreground Service!")
             stopInCallForegroundService()
             return
         }
@@ -897,7 +926,7 @@ class NotificationsManager
             ) {
                 mask = mask or Compatibility.FOREGROUND_SERVICE_TYPE_MICROPHONE
                 Log.i(
-                    "$TAG RECORD_AUDIO permission has been granted, adding FOREGROUND_SERVICE_TYPE_MICROPHONE to foreground Service types mask"
+                    "$TAG RECORD_AUDIO permission has been granted, adding MICROPHONE to foreground Service types mask"
                 )
             }
             val isSendingVideo = when (call.currentParams.videoDirection) {
@@ -912,7 +941,7 @@ class NotificationsManager
                 ) {
                     mask = mask or Compatibility.FOREGROUND_SERVICE_TYPE_CAMERA
                     Log.i(
-                        "$TAG CAMERA permission has been granted, adding FOREGROUND_SERVICE_TYPE_CAMERA to foreground Service types mask"
+                        "$TAG CAMERA permission has been granted, adding CAMERA to foreground Service types mask"
                     )
                 }
             }
@@ -928,20 +957,35 @@ class NotificationsManager
                 notification,
                 mask
             )
-            if (!success) {
-                Log.e("$TAG Failed to start call foreground service!")
-            }
-            notificationsMap[notifiable.notificationId] = notification
-            currentInCallServiceNotificationId = notifiable.notificationId
-            inCallServiceForegroundNotificationPublished = true
-            Log.i("$TAG Call notification with ID [${notifiable.notificationId}] has been used to start service as foreground")
+            if (success) {
+                if (notificationsMap.containsKey(IN_CALL_FOREGROUND_SERVICE_ERROR_ID)) {
+                    Log.i("$TAG Removing previous in-call foreground Service error notification")
+                    cancelNotification(IN_CALL_FOREGROUND_SERVICE_ERROR_ID, IN_CALL_ERROR_TAG)
+                }
 
-            if (waitForInCallServiceForegroundToStopIt) {
-                Log.i("$TAG We were waiting for foreground service to be started to stop it, doing it")
-                stopInCallForegroundService()
+                notificationsMap[notifiable.notificationId] = notification
+                currentInCallServiceNotificationId = notifiable.notificationId
+                inCallServiceForegroundNotificationPublished = true
+                Log.i("$TAG Call notification with ID [${notifiable.notificationId}] has been used to start service as foreground")
+
+                if (waitForInCallServiceForegroundToStopIt) {
+                    Log.i("$TAG We were waiting for foreground Service to be started to stop it, doing it")
+                    stopInCallForegroundService()
+                }
+            } else {
+                Log.e("$TAG Failed to start call foreground Service!")
+                // In case of incoming call the notification ID would be in the map
+                // so we have to remove it as notification is no longer displayed
+                if (notificationsMap.containsKey(notifiable.notificationId)) {
+                    notificationsMap.remove(notifiable.notificationId)
+                }
+                if (currentInCallServiceNotificationId == notifiable.notificationId) {
+                    currentInCallServiceNotificationId = -1
+                }
+                showInCallForegroundServiceErrorNotification()
             }
         } else {
-            Log.e("$TAG POST_NOTIFICATIONS permission isn't granted, don't start foreground service!")
+            Log.e("$TAG POST_NOTIFICATIONS permission isn't granted, don't start foreground Service!")
         }
     }
 
@@ -982,15 +1026,16 @@ class NotificationsManager
                     notification,
                     Compatibility.FOREGROUND_SERVICE_TYPE_PHONE_CALL
                 )
-                if (!success) {
-                    Log.e("$TAG Failed to start dummy call foreground service!")
+                if (success) {
+                    notificationsMap[DUMMY_NOTIF_ID] = notification
+                    currentInCallServiceNotificationId = DUMMY_NOTIF_ID
+                    inCallServiceForegroundNotificationPublished = true
+                    Log.i("$TAG Dummy notification with ID [$DUMMY_NOTIF_ID] has been used to start service as foreground")
+                } else {
+                    Log.e("$TAG Failed to start dummy call foreground Service!")
                 }
-                notificationsMap[DUMMY_NOTIF_ID] = notification
-                currentInCallServiceNotificationId = DUMMY_NOTIF_ID
-                inCallServiceForegroundNotificationPublished = true
-                Log.i("$TAG Dummy notification with ID [$DUMMY_NOTIF_ID] has been used to start service as foreground")
             } else {
-                Log.e("$TAG POST_NOTIFICATIONS permission isn't granted, don't start foreground service!")
+                Log.e("$TAG POST_NOTIFICATIONS permission isn't granted, don't start foreground Service!")
             }
         } else {
             Log.w("$TAG Core Foreground Service hasn't started yet...")
@@ -1001,13 +1046,15 @@ class NotificationsManager
     private fun stopInCallForegroundService() {
         val service = inCallService
         if (service != null) {
-            Log.i(
-                "$TAG Stopping foreground Service (was using notification ID [$currentInCallServiceNotificationId])"
-            )
-            service.stopForeground(STOP_FOREGROUND_REMOVE)
-            service.stopSelf()
-            inCallServiceForegroundNotificationPublished = false
-            waitForInCallServiceForegroundToStopIt = false
+            if (currentInCallServiceNotificationId != -1) {
+                Log.i(
+                    "$TAG Stopping foreground Service (was using notification ID [$currentInCallServiceNotificationId])"
+                )
+                service.stopForeground(STOP_FOREGROUND_REMOVE)
+                service.stopSelf()
+                inCallServiceForegroundNotificationPublished = false
+                waitForInCallServiceForegroundToStopIt = false
+            }
         } else {
             Log.w("$TAG Can't stop foreground Service & notif, no Service was found")
         }
@@ -1225,6 +1272,44 @@ class NotificationsManager
             accountsErrorNotificationsMap[identity] = notificationId
             Log.i("$TAG Showing account registration error notification with ID [$notificationId] for [$identity]")
             notify(notificationId, notification, ACCOUNT_ERROR_TAG)
+        }
+    }
+
+    @WorkerThread
+    private fun showInCallForegroundServiceErrorNotification() {
+        if (Compatibility.isPostNotificationsPermissionGranted(context)) {
+            val pendingIntent = TaskStackBuilder.create(context).run {
+                addNextIntentWithParentStack(
+                    Intent(context, CallActivity::class.java).apply {
+                        action = Intent.ACTION_MAIN // Needed as well
+                        flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    }
+                )
+                getPendingIntent(
+                    IN_CALL_FOREGROUND_SERVICE_ERROR_ID,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )!!
+            }
+
+            val notification = NotificationCompat.Builder(
+                context,
+                context.getString(R.string.notification_channel_account_error_id)
+            )
+                .setContentTitle(context.getString(R.string.notification_in_call_foreground_service_error_title))
+                .setContentText(context.getString(R.string.notification_in_call_foreground_service_error_message))
+                .setSmallIcon(R.drawable.warning_circle)
+                .setAutoCancel(true)
+                .setOngoing(false)
+                .setCategory(NotificationCompat.CATEGORY_ERROR)
+                .setWhen(System.currentTimeMillis())
+                .setShowWhen(true)
+                .setContentIntent(pendingIntent)
+                .build()
+
+            val notificationId = IN_CALL_FOREGROUND_SERVICE_ERROR_ID
+            Log.i("$TAG Showing in-call foreground Service error notification with ID [$notificationId]")
+            notificationsMap[notificationId] = notification
+            notify(notificationId, notification, IN_CALL_ERROR_TAG)
         }
     }
 
@@ -1573,7 +1658,12 @@ class NotificationsManager
         val address = call.remoteAddress.asStringUriOnly()
         val notifiable: Notifiable? = callNotificationsMap[address]
         if (notifiable != null) {
-            cancelNotification(notifiable.notificationId)
+            if (notificationsMap.containsKey(notifiable.notificationId)) {
+                cancelNotification(notifiable.notificationId)
+            } else if (notificationsMap.containsKey(IN_CALL_FOREGROUND_SERVICE_ERROR_ID)) {
+                Log.i("$TAG Removing previous in-call foreground Service error notification")
+                cancelNotification(IN_CALL_FOREGROUND_SERVICE_ERROR_ID, IN_CALL_ERROR_TAG)
+            }
             callNotificationsMap.remove(address)
         } else {
             Log.w("$TAG No notification found for call with remote address [$address]")
@@ -1777,7 +1867,7 @@ class NotificationsManager
         val importance = channel?.importance ?: NotificationManagerCompat.IMPORTANCE_NONE
         if (importance == NotificationManagerCompat.IMPORTANCE_NONE) {
             Log.e(
-                "$TAG Keep alive for third party accounts Service channel has been disabled, can't start foreground service!"
+                "$TAG Keep alive for third party accounts Service channel has been disabled, can't start foreground Service!"
             )
             return
         }
@@ -1818,7 +1908,7 @@ class NotificationsManager
                 Compatibility.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
             )
             if (!success) {
-                Log.e("$TAG Failed to start keep alive foreground service!")
+                Log.e("$TAG Failed to start keep alive foreground Service!")
             }
             currentKeepAliveThirdPartyAccountsForegroundServiceNotificationId = KEEP_ALIVE_FOR_THIRD_PARTY_ACCOUNTS_ID
         } else {

@@ -76,6 +76,8 @@
     <string name="notification_disable_speaker_for_call">Désactiver haut-parleur</string>
     <string name="notification_account_registration_error_title">Compte %s en erreur !</string>
     <string name="notification_account_registration_error_message">Ouvrez &appName; pour rafraîchir la connexion</string>
+    <string name="notification_in_call_foreground_service_error_title">Votre correspondant ne vous entend pas !</string>
+    <string name="notification_in_call_foreground_service_error_message">Cliquez sur cette notification pour corriger le problème</string>
 
     <!-- First screens user see when app is installed and started -->
     <string name="welcome_page_title">Bienvenue</string>

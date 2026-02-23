@@ -266,6 +266,14 @@ class LinphoneUtils {
             }
         }
 
+        @AnyThread
+        fun isCallActive(callState: Call.State): Boolean {
+            return when (callState) {
+                Call.State.Connected, Call.State.StreamsRunning, Call.State.UpdatedByRemote, Call.State.Updating -> true
+                else -> false
+            }
+        }
+
         @WorkerThread
         fun getCallErrorInfoToast(call: Call): String {
             val errorInfo = call.errorInfo

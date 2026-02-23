@@ -118,6 +118,8 @@
     <string name="notification_disable_speaker_for_call">Turn off speaker</string>
     <string name="notification_account_registration_error_title">Account %s registration failed!</string>
     <string name="notification_account_registration_error_message">Open &appName; to refresh the registration</string>
+    <string name="notification_in_call_foreground_service_error_title">Your correspondent does not hear you!</string>
+    <string name="notification_in_call_foreground_service_error_message">Click on this notification to fix it</string>
 
     <!-- First screens user see when app is installed and started -->
     <string name="welcome_page_title">Welcome</string>

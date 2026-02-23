@@ -44,6 +44,7 @@ Group changes to describe their impact on the project, as follows:
 - Improved UI on tablets with screen sw600dp and higher, will look more like our desktop app
 - Improved navigation within app when using a keyboard
 - Now loading media/documents contents in conversation by chunks (instead of all of them at once)
+- If in-call foreground service doesn't start, show an error notification and clicking on it will fix the issue (by bringing Linphone in foreground and re-starting the foreground service)
 - Simplified audio device name in settings
 - Reworked some settings (moved calls related ones from advanced settings to advanced calls settings)
 - Removed menu to access account profile, button is now directly available from drawer menu

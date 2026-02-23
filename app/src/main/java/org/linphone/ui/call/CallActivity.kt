@@ -381,6 +381,10 @@ class CallActivity : GenericActivity() {
             Log.w("$TAG Call activity is being resumed but no call was found, finishing activity")
             finish()
         }
+
+        coreContext.postOnCoreThread {
+            coreContext.notificationsManager.showInCallForegroundServiceNotificationIfNeeded()
+        }
     }
 
     override fun onPause() {
