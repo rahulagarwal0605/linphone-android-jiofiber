@@ -551,7 +551,7 @@
     <string name="call_action_change_layout">Layout</string>
     <string name="call_state_outgoing_progress">Im Gange</string>
     <string name="call_state_outgoing_ringing">Klingeln</string>
-    <string name="call_state_incoming_received">Eingehend</string>
+    <string name="call_state_incoming_received">Eingehender</string>
     <string name="call_state_connected">Aktiv</string>
     <string name="call_state_paused">Pausieren</string>
     <string name="call_state_paused_by_remote">Fern pausiert</string>
@@ -896,4 +896,12 @@
     <string name="call_audio_device_type_microphone">Mikrofon</string>
     <string name="call_audio_device_type_hdmi">HDMI</string>
     <string name="call_stats_ice_label">ICE: %s</string>
+    <string name="settings_calls_change_ringtone_picker_unavailable_toast">Der Klingelton-Auswähler ist nicht verfügbar!</string>
+    <string name="settings_developer_no_auth_info_removed_toast">Keine verwaisten Authentifizierungsinformationen gefunden</string>
+    <string name="manage_account_status_registration_status_title">Verbindungsstatus</string>
+    <string name="settings_developer_clear_orphan_auth_info_title">Authentifizierungsinformationen löschen, die nicht mehr mit einem Konto verknüpft sind</string>
+    <plurals name="settings_developer_cleared_auth_info_toast">
+        <item quantity="one">%s verwaiste Anmeldeinformation entfernt</item>
+        <item quantity="other">%s verwaiste Anmeldeinformationen entfernt</item>
+    </plurals>
 </resources>
