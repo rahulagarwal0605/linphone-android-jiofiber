@@ -188,10 +188,7 @@ class ContactsListViewModel
     override fun filter() {
         isListFiltered.value = currentFilter.isNotEmpty()
         coreContext.postOnCoreThread {
-            applyFilter(
-                currentFilter,
-                domainFilter
-            )
+            applyFilter(currentFilter, domainFilter)
         }
     }
 
@@ -202,9 +199,7 @@ class ContactsListViewModel
             areAllContactsDisplayed.postValue(domainFilter.isEmpty())
             checkIfDefaultAccountOnDefaultDomain()
 
-            coreContext.postOnMainThread {
-                applyFilter(currentFilter)
-            }
+            applyFilter(currentFilter, domainFilter)
         }
     }
 

@@ -100,7 +100,7 @@ class ConversationsListFragment : AbstractMainFragment() {
         Log.i(
             "$TAG Default account changed, updating avatar in top bar & re-computing conversations"
         )
-        listViewModel.applyFilter()
+        listViewModel.filter()
     }
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {

@@ -77,7 +77,7 @@ class MeetingsListFragment : AbstractMainFragment() {
             Log.i(
                 "$TAG Default account changed, updating avatar in top bar & re-computing meetings list"
             )
-            listViewModel.applyFilter()
+            listViewModel.filter()
         }
     }
 
@@ -176,7 +176,7 @@ class MeetingsListFragment : AbstractMainFragment() {
 
                 meetingViewModelBeingCancelled?.delete()
                 meetingViewModelBeingCancelled = null
-                listViewModel.applyFilter()
+                listViewModel.filter()
 
                 (requireActivity() as GenericActivity).showGreenToast(
                     getString(R.string.meeting_info_deleted_toast),
@@ -201,7 +201,7 @@ class MeetingsListFragment : AbstractMainFragment() {
                         } else {
                             Log.i("$TAG Deleting meeting [${model.id}]")
                             model.delete()
-                            listViewModel.applyFilter()
+                            listViewModel.filter()
                         }
                     }
                 )
@@ -213,7 +213,7 @@ class MeetingsListFragment : AbstractMainFragment() {
         sharedViewModel.forceRefreshMeetingsListEvent.observe(viewLifecycleOwner) {
             it.consume {
                 Log.i("$TAG We were asked to refresh the meetings list, doing it now")
-                listViewModel.applyFilter()
+                listViewModel.filter()
             }
         }
 
