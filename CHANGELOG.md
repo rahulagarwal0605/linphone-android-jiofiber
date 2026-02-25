@@ -17,6 +17,7 @@ Group changes to describe their impact on the project, as follows:
 - Added keyboard shortcuts on IncomingCallFragment: Ctrl + Shift + A to answer the call, Ctrl + Shift + D to decline it
 - Added seeking feature to recordings & media player within app
 - Added PDF preview in conversation (message bubble & documents list)
+- Added media/documents access from contact page if a 1-1 conversation with any of the contact SIP addresses is found
 - Added hover effect when using a mouse (useful for tablets or devices with desktop mode)
 - Support right click on some items to open bottom sheet/menu
 - Added toggle speaker action in active call notification

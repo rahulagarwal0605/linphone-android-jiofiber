@@ -99,6 +99,8 @@ class ContactViewModel
 
     val videoCallDisabled = MutableLiveData<Boolean>()
 
+    val existingConversationId = MutableLiveData<String>()
+
     val operationInProgress = MutableLiveData<Boolean>()
 
     val showLongPressMenuForNumberOrAddressEvent: MutableLiveData<Event<ContactNumberOrAddressModel>> by lazy {
@@ -207,7 +209,12 @@ class ContactViewModel
                 Log.i("$TAG Conversation [$id] successfully created")
                 chatRoom.removeListener(this)
                 operationInProgress.postValue(false)
-                goToConversationEvent.postValue(Event(LinphoneUtils.getConversationId(chatRoom)))
+
+                val conversationId = LinphoneUtils.getConversationId(chatRoom)
+                if (existingConversationId.value.orEmpty().isEmpty()) {
+                    existingConversationId.postValue(conversationId)
+                }
+                goToConversationEvent.postValue(Event(conversationId))
             } else if (state == ChatRoom.State.CreationFailed) {
                 Log.e("$TAG Conversation [$id] creation has failed!")
                 chatRoom.removeListener(this)
@@ -330,6 +337,7 @@ class ContactViewModel
         sipAddressesAndPhoneNumbers.postValue(addressesAndNumbers)
 
         fetchDevicesAndTrust()
+        lookUpExistingChatRoom()
     }
 
     @UiThread
@@ -545,7 +553,12 @@ class ContactViewModel
                         existingChatRoom
                     )}], going to it"
                 )
-                goToConversationEvent.postValue(Event(LinphoneUtils.getConversationId(existingChatRoom)))
+
+                val conversationId = LinphoneUtils.getConversationId(existingChatRoom)
+                if (existingConversationId.value.orEmpty().isEmpty()) {
+                    existingConversationId.postValue(conversationId)
+                }
+                goToConversationEvent.postValue(Event(conversationId))
             } else {
                 Log.i(
                     "$TAG No existing conversation between [$localSipUri] and [$remoteSipUri] was found, let's create it"
@@ -558,7 +571,12 @@ class ContactViewModel
                             val id = LinphoneUtils.getConversationId(chatRoom)
                             Log.i("$TAG 1-1 conversation [$id] has been created")
                             operationInProgress.postValue(false)
-                            goToConversationEvent.postValue(Event(LinphoneUtils.getConversationId(chatRoom)))
+
+                            val conversationId = LinphoneUtils.getConversationId(chatRoom)
+                            if (existingConversationId.value.orEmpty().isEmpty()) {
+                                existingConversationId.postValue(conversationId)
+                            }
+                            goToConversationEvent.postValue(Event(conversationId))
                         } else {
                             Log.i("$TAG Conversation isn't in Created state yet, wait for it")
                             chatRoom.addListener(chatRoomListener)
@@ -567,7 +585,12 @@ class ContactViewModel
                         val id = LinphoneUtils.getConversationId(chatRoom)
                         Log.i("$TAG Conversation successfully created [$id]")
                         operationInProgress.postValue(false)
-                        goToConversationEvent.postValue(Event(LinphoneUtils.getConversationId(chatRoom)))
+
+                        val conversationId = LinphoneUtils.getConversationId(chatRoom)
+                        if (existingConversationId.value.orEmpty().isEmpty()) {
+                            existingConversationId.postValue(conversationId)
+                        }
+                        goToConversationEvent.postValue(Event(conversationId))
                     }
                 } else {
                     Log.e(
@@ -626,5 +649,45 @@ class ContactViewModel
         }
 
         devices.postValue(devicesList)
+    }
+
+    @WorkerThread
+    private fun lookUpExistingChatRoom() {
+        val account = LinphoneUtils.getDefaultAccount()
+        if (account != null) {
+            val params = coreContext.core.createConferenceParams(null)
+            params.isChatEnabled = true
+            params.isGroupEnabled = false
+            params.account = account
+
+            val localAddress = account.params.identityAddress
+            val addresses = friend.addresses
+            for (address in addresses) {
+                val sameDomain = address.domain == corePreferences.defaultDomain && address.domain == account.params.domain
+                if (account.params.instantMessagingEncryptionMandatory && sameDomain) {
+                    params.securityLevel = Conference.SecurityLevel.EndToEnd
+                } else if (!account.params.instantMessagingEncryptionMandatory) {
+                    if (LinphoneUtils.isEndToEndEncryptedChatAvailable(coreContext.core)) {
+                        params.securityLevel = Conference.SecurityLevel.EndToEnd
+                    } else {
+                        params.securityLevel = Conference.SecurityLevel.None
+                    }
+                }
+
+                val participants = arrayOf(address)
+                val existingChatRoom = coreContext.core.searchChatRoom(params, localAddress, null, participants)
+                if (existingChatRoom != null) {
+                    val conversationId = LinphoneUtils.getConversationId(existingChatRoom)
+                    Log.i("$TAG Found existing conversation with ID [$conversationId]")
+                    existingConversationId.postValue(conversationId)
+                    return
+                }
+            }
+
+            Log.w("$TAG No existing conversation was found for this contact with any of it's SIP addresses")
+            existingConversationId.postValue("")
+        } else {
+            Log.e("$TAG No default account found!")
+        }
     }
 }
