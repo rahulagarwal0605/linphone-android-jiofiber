@@ -253,6 +253,14 @@ class ConversationsListViewModel
             return
         }
 
+        val conferenceInfo = chatRoom.conferenceInfo
+        if (conferenceInfo != null) {
+            Log.w(
+                "$TAG Chat room with identifier [$identifier] was created but not displaying it because it is related to a conference"
+            )
+            return
+        }
+
         val hideEmptyChatRooms = coreContext.core.config.getBool("misc", "hide_empty_chat_rooms", true)
         // Hide empty chat rooms only applies to 1-1 conversations
         if (hideEmptyChatRooms && !LinphoneUtils.isChatRoomAGroup(chatRoom) && chatRoom.lastMessageInHistory == null) {
