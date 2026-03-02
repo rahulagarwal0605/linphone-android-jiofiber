@@ -66,6 +66,8 @@ class ConferenceViewModel
 
     val isCurrentCallInConference = MutableLiveData<Boolean>()
 
+    val isEndToEndEncrypted = MutableLiveData<Boolean>()
+
     val conferenceLayout = MutableLiveData<Int>()
 
     val screenSharingParticipantName = MutableLiveData<String>()
@@ -280,6 +282,10 @@ class ConferenceViewModel
                 isPaused.postValue(!isIn)
                 Log.i("$TAG We [${if (isIn) "are" else "aren't"}] in the conference")
 
+                val conferenceSecurityLevel = conference.currentParams.securityLevel
+                Log.i("$TAG Conference call security level is [$conferenceSecurityLevel]")
+                isEndToEndEncrypted.postValue(conferenceSecurityLevel == Conference.SecurityLevel.EndToEnd)
+
                 subject.postValue(conference.subjectUtf8.orEmpty())
                 computeParticipants(false)
                 if (conference.participantList.size >= 1) { // we do not count
@@ -316,6 +322,10 @@ class ConferenceViewModel
         }
 
         isCurrentCallInConference.postValue(true)
+        val conferenceSecurityLevel = conf.currentParams.securityLevel
+        Log.i("$TAG Conference call security level is [$conferenceSecurityLevel]")
+        isEndToEndEncrypted.postValue(conferenceSecurityLevel == Conference.SecurityLevel.EndToEnd)
+
         conference = conf
         conference.addListener(conferenceListener)
         conferenceConfigured = true
