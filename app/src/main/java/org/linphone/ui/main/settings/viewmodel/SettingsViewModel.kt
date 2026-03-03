@@ -84,7 +84,6 @@ class SettingsViewModel
 
     val adaptiveRateControlEnabled = MutableLiveData<Boolean>()
 
-    val videoEnabled = MutableLiveData<Boolean>()
     val videoFecEnabled = MutableLiveData<Boolean>()
 
     val isVibrationAvailable = MutableLiveData<Boolean>()
@@ -329,8 +328,7 @@ class SettingsViewModel
             }
 
             adaptiveRateControlEnabled.postValue(core.isAdaptiveRateControlEnabled)
-
-            videoEnabled.postValue(core.isVideoEnabled)
+            
             videoFecEnabled.postValue(core.isFecEnabled)
             vibrateDuringIncomingCall.postValue(core.isVibrationOnIncomingCallEnabled)
             autoRecordCalls.postValue(corePreferences.automaticallyStartCallRecording)
@@ -471,16 +469,6 @@ class SettingsViewModel
         coreContext.postOnCoreThread { core ->
             core.isAdaptiveRateControlEnabled = newValue
             adaptiveRateControlEnabled.postValue(newValue)
-        }
-    }
-
-    @UiThread
-    fun toggleEnableVideo() {
-        val newValue = videoEnabled.value == false
-        coreContext.postOnCoreThread { core ->
-            core.isVideoCaptureEnabled = newValue
-            core.isVideoDisplayEnabled = newValue
-            videoEnabled.postValue(newValue)
         }
     }
 

@@ -83,7 +83,6 @@
                         android:maxLines="2"
                         android:ellipsize="end"
                         android:labelFor="@id/enable_fec_switch"
-                        android:visibility="@{viewModel.videoEnabled ? View.VISIBLE : View.GONE}"
                         app:layout_constraintTop_toTopOf="@id/enable_fec_switch"
                         app:layout_constraintBottom_toBottomOf="@id/enable_fec_switch"
                         app:layout_constraintStart_toStartOf="parent"
@@ -97,9 +96,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
                         android:layout_marginEnd="16dp"
-                        android:visibility="@{viewModel.videoEnabled ? View.VISIBLE : View.GONE}"
-                        android:enabled="@{viewModel.videoEnabled}"
-                        android:checked="@{viewModel.videoEnabled &amp;&amp; viewModel.videoFecEnabled}"
+                        android:checked="@{viewModel.videoFecEnabled}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
