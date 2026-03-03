@@ -32,8 +32,6 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.os.PowerManager
-import android.provider.Settings
-import android.provider.Settings.SettingNotFoundException
 import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
@@ -1109,23 +1107,6 @@ class CoreContext
         )
         context.stopService(serviceIntent)
         keepAliveServiceStarted = false
-    }
-
-    @WorkerThread
-    fun playDtmf(character: Char, duration: Int = 200, ignoreSystemPolicy: Boolean = false) {
-        try {
-            if (ignoreSystemPolicy || Settings.System.getInt(
-                    context.contentResolver,
-                    Settings.System.DTMF_TONE_WHEN_DIALING
-                ) != 0
-            ) {
-                core.playDtmf(character, duration)
-            } else {
-                Log.w("$TAG Numpad DTMF tones are disabled in system settings, not playing them")
-            }
-        } catch (snfe: SettingNotFoundException) {
-            Log.e("$TAG DTMF_TONE_WHEN_DIALING system setting not found: $snfe")
-        }
     }
 
     @WorkerThread

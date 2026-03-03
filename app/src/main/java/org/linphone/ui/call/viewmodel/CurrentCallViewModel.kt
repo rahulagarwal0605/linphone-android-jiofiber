@@ -260,6 +260,10 @@ class CurrentCallViewModel
         MutableLiveData()
     }
 
+    val clearPressedDtmfBarEvent: MutableLiveData<Event<Boolean>> by lazy {
+        MutableLiveData()
+    }
+
     // Sliding answer/decline button
 
     val isScreenLocked = MutableLiveData<Boolean>()
@@ -577,6 +581,7 @@ class CurrentCallViewModel
             { // OnBlindTransferClicked
             },
             { // OnClearInput
+                clearPressedDtmfBarEvent.value = Event(true)
             }
         )
 

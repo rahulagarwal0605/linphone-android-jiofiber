@@ -304,6 +304,12 @@ class ActiveCallFragment : GenericCallFragment() {
             }
         }
 
+        callViewModel.clearPressedDtmfBarEvent.observe(viewLifecycleOwner) {
+            it.consume {
+                binding.callNumpad.digitsHistory.setText("")
+            }
+        }
+
         callViewModel.appendDigitToSearchBarEvent.observe(viewLifecycleOwner) {
             it.consume { digit ->
                 binding.callNumpad.digitsHistory.addCharacterAtPosition(digit)

@@ -26,6 +26,7 @@ import android.graphics.drawable.AnimatedVectorDrawable
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
@@ -651,4 +652,22 @@ fun EmojiPickerView.setEmojiPickedListener(listener: EmojiPickedListener) {
 
 interface EmojiPickedListener {
     fun onEmojiPicked(item: EmojiViewItem)
+}
+
+@SuppressLint("ClickableViewAccessibility")
+@BindingAdapter("onTouchListener")
+fun View.setTouchListener(listener: TouchListener) {
+    setOnTouchListener { view, event ->
+        return@setOnTouchListener when (event.action) {
+            MotionEvent.ACTION_DOWN -> listener.onPressed(view)
+            MotionEvent.ACTION_UP -> listener.onReleased(view)
+            else -> false
+        }
+    }
+}
+
+interface TouchListener {
+    fun onPressed(view: View): Boolean
+
+    fun onReleased(view: View): Boolean
 }

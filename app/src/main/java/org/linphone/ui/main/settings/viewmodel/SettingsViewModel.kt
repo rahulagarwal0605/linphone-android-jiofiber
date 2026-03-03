@@ -328,7 +328,7 @@ class SettingsViewModel
             }
 
             adaptiveRateControlEnabled.postValue(core.isAdaptiveRateControlEnabled)
-            
+
             videoFecEnabled.postValue(core.isFecEnabled)
             vibrateDuringIncomingCall.postValue(core.isVibrationOnIncomingCallEnabled)
             autoRecordCalls.postValue(corePreferences.automaticallyStartCallRecording)
