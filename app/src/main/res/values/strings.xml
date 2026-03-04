@@ -307,6 +307,7 @@
     <string name="settings_contacts_ldap_error_toast">A error occurred, LDAP server not saved!</string>
     <string name="settings_contacts_ldap_empty_field_error_toast">All fields must be filled</string>
     <string name="settings_meetings_title">Meetings</string>
+    <string name="settings_meetings_show_past_meetings_title">Show past meetings</string>
     <string name="settings_meetings_default_layout_title">Default layout</string>
     <string name="settings_meetings_layout_active_speaker_label">Active speaker</string>
     <string name="settings_meetings_layout_mosaic_label">Mosaic</string>

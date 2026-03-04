@@ -325,6 +325,12 @@ class SettingsFragment : GenericMainFragment() {
             binding.tunnelSettings.tunnelModeSpinner.setSelection(index)
         }
 
+        viewModel.forceRefreshMeetingsListEvent.observe(viewLifecycleOwner) {
+            it.consume {
+                sharedViewModel.forceRefreshMeetingsListEvent.postValue(Event(true))
+            }
+        }
+
         binding.setTurnOnVfsClickListener {
             showConfirmVfsDialog()
         }

@@ -230,6 +230,13 @@ class CorePreferences
             config.setBool("app", "create_e2e_encrypted_conferences", value)
         }
 
+    @get:AnyThread @set:WorkerThread
+    var showPastMeetings: Boolean
+        get() = config.getBool("ui", "show_past_meetings", false)
+        set(value) {
+            config.setBool("ui", "show_past_meetings", value)
+        }
+
     // Contacts related
 
     @get:AnyThread @set:WorkerThread

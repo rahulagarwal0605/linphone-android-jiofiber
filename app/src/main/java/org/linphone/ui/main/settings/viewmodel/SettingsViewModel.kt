@@ -140,6 +140,11 @@ class SettingsViewModel
     // Meetings settings
     val showMeetingsSettings = MutableLiveData<Boolean>()
 
+    val showPastMeetings = MutableLiveData<Boolean>()
+    val forceRefreshMeetingsListEvent: MutableLiveData<Event<Boolean>> by lazy {
+        MutableLiveData<Event<Boolean>>()
+    }
+
     val defaultLayout = MutableLiveData<Int>()
     val availableLayoutsNames = arrayListOf(
         AppUtils.getString(R.string.settings_meetings_layout_active_speaker_label),
@@ -348,6 +353,7 @@ class SettingsViewModel
             hideEmptyContacts.postValue(corePreferences.hideContactsWithoutPhoneNumberOrSipAddress)
             presenceSubscribe.postValue(core.isFriendListSubscriptionEnabled)
 
+            showPastMeetings.postValue(corePreferences.showPastMeetings)
             defaultLayout.postValue(core.defaultConferenceLayout.toInt())
 
             autoShowDialpad.postValue(corePreferences.automaticallyShowDialpad)
@@ -661,6 +667,16 @@ class SettingsViewModel
     @UiThread
     fun toggleMeetingsExpand() {
         expandMeetings.value = expandMeetings.value == false
+    }
+
+    @UiThread
+    fun toggleShowPastMeetings() {
+        val newValue = showPastMeetings.value == false
+        coreContext.postOnCoreThread {
+            corePreferences.showPastMeetings = newValue
+            showPastMeetings.postValue(newValue)
+            forceRefreshMeetingsListEvent.postValue(Event(true))
+        }
     }
 
     @UiThread
