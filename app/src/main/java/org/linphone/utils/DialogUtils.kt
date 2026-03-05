@@ -66,6 +66,7 @@ import org.linphone.ui.main.contacts.model.ContactTrustDialogModel
 import org.linphone.ui.main.contacts.model.NumberOrAddressPickerDialogModel
 import org.linphone.ui.main.model.GroupSetOrEditSubjectDialogModel
 import androidx.core.graphics.drawable.toDrawable
+import org.linphone.databinding.DialogAssistantCreateAccountPhoneNumberValidationNotAvailableBinding
 import org.linphone.databinding.DialogDeleteChatMessageBinding
 import org.linphone.databinding.DialogManageAccountOutboundProxyHelpBinding
 import org.linphone.ui.main.chat.model.MessageDeleteDialogModel
@@ -97,6 +98,22 @@ class DialogUtils {
             val binding: DialogAssistantCreateAccountConfirmPhoneNumberBinding = DataBindingUtil.inflate(
                 LayoutInflater.from(context),
                 R.layout.dialog_assistant_create_account_confirm_phone_number,
+                null,
+                false
+            )
+            binding.viewModel = viewModel
+
+            return getDialog(context, binding)
+        }
+
+        @UiThread
+        fun getAccountCreationPhoneNumberValidationNotAvailableDialog(
+            context: Context,
+            viewModel: ConfirmationDialogModel
+        ): Dialog {
+            val binding: DialogAssistantCreateAccountPhoneNumberValidationNotAvailableBinding = DataBindingUtil.inflate(
+                LayoutInflater.from(context),
+                R.layout.dialog_assistant_create_account_phone_number_validation_not_available,
                 null,
                 false
             )

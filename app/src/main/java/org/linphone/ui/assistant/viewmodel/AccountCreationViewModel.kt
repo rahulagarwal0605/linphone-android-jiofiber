@@ -108,6 +108,10 @@ class AccountCreationViewModel
         MutableLiveData()
     }
 
+    val accountCantBeCreatedBySmsEvent: MutableLiveData<Event<Boolean>> by lazy {
+        MutableLiveData()
+    }
+
     private var waitingForFlexiApiPushToken = false
     private var waitForPushJob: Job? = null
 
@@ -166,7 +170,11 @@ class AccountCreationViewModel
             operationInProgress.postValue(false)
 
             if (!errorMessage.isNullOrEmpty()) {
-                showFormattedRedToast(errorMessage, R.drawable.warning_circle)
+                if (request.type == AccountManagerServicesRequest.Type.SendPhoneNumberLinkingCodeBySms && statusCode == 422) {
+                    // Do not show error message sent by the account management platform for this specific scenario
+                } else {
+                    showFormattedRedToast(errorMessage, R.drawable.warning_circle)
+                }
             }
 
             for (parameter in parameterErrors?.keys.orEmpty()) {
@@ -186,6 +194,7 @@ class AccountCreationViewModel
                     waitForPushJob?.cancel()
                 }
                 AccountManagerServicesRequest.Type.SendPhoneNumberLinkingCodeBySms -> {
+                    Log.e("$TAG Error sending SMS code, clearing auth info & account")
                     val authInfo = accountCreatedAuthInfo
                     if (authInfo != null) {
                         coreContext.core.removeAuthInfo(authInfo)
@@ -193,6 +202,10 @@ class AccountCreationViewModel
                     val account = accountCreated
                     if (account != null) {
                         coreContext.core.removeAccount(account)
+                    }
+
+                    if (statusCode == 422) {
+                        accountCantBeCreatedBySmsEvent.postValue(Event(true))
                     }
                 }
                 else -> {
