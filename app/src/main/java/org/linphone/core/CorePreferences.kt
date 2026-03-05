@@ -222,8 +222,8 @@ class CorePreferences
         }
 
     @get:AnyThread @set:WorkerThread
-    var hideChatMessageContentInNotification: Boolean
-        get() = config.getBool("ui", "display_notification_content", false)
+    var showChatMessageContentInNotification: Boolean
+        get() = config.getBool("ui", "display_notification_content", true)
         set(value) {
             config.setBool("ui", "display_notification_content", value)
         }

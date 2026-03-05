@@ -1600,10 +1600,10 @@ class NotificationsManager
             }
 
             val senderPerson = if (message.isOutgoing) null else person // Use null for ourselves
-            val text = if (corePreferences.hideChatMessageContentInNotification) {
-                AppUtils.getString(R.string.notification_chat_message_hidden_content)
-            } else {
+            val text = if (corePreferences.showChatMessageContentInNotification) {
                 message.message
+            } else {
+                AppUtils.getString(R.string.notification_chat_message_hidden_content)
             }
             val tmp = NotificationCompat.MessagingStyle.Message(
                 text,

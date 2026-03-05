@@ -349,7 +349,7 @@ class SettingsViewModel
             markAsReadWhenDismissingNotification.postValue(
                 corePreferences.markConversationAsReadWhenDismissingMessageNotification
             )
-            hideMessageContentInNotification.postValue(corePreferences.hideChatMessageContentInNotification)
+            hideMessageContentInNotification.postValue(!corePreferences.showChatMessageContentInNotification)
 
             sortContactsBy.postValue(if (corePreferences.sortContactsByFirstName) 0 else 1)
             editNativeContactsInLinphone.postValue(corePreferences.editNativeContactsInLinphone)
@@ -580,7 +580,7 @@ class SettingsViewModel
     fun toggleHideMessageContentInNotification() {
         val newValue = hideMessageContentInNotification.value == false
         coreContext.postOnCoreThread {
-            corePreferences.hideChatMessageContentInNotification = newValue
+            corePreferences.showChatMessageContentInNotification = !newValue
             hideMessageContentInNotification.postValue(newValue)
         }
     }
