@@ -6,4 +6,9 @@
         <item quantity="many">%s dies</item>
         <item quantity="other">%s dies</item>
     </plurals>
+    <string name="notification_in_call_foreground_service_error_message">Prem a la notificació per arregar-ho</string>
+    <string name="welcome_page_title">Benvingut</string>
+    <string name="welcome_page_2_title">Assegurada</string>
+    <string name="notification_in_call_foreground_service_error_title">No t\'escolten!</string>
+    <string name="welcome_page_1_message">Un aplicatiu de comunicació <b>segur</b>, <b>de codi obert</b> i <b>en francès</b>.</string>
 </resources>

@@ -903,4 +903,16 @@
     <string name="call_stats_ip_family_label">Rozsah IP: %s</string>
     <string name="content_description_chat_cancel_edit">Zrušit úpravu zprávy</string>
     <string name="content_description_close_drawer_menu">Zavřít menu</string>
+    <string name="notification_in_call_foreground_service_error_title">Volaný vás neslyší!</string>
+    <string name="settings_developer_no_auth_info_removed_toast">Žádné osiřelé autentizační údaje nebyly nalezeny</string>
+    <plurals name="settings_developer_cleared_auth_info_toast">
+        <item quantity="one">%s osiřelý autentizační údaj odstraněn</item>
+        <item quantity="few">%s osiřelé autentizační údaje byly odstraněny</item>
+        <item quantity="other">%s osiřelých autentizačních údajů bylo odstraněno</item>
+    </plurals>
+    <string name="notification_in_call_foreground_service_error_message">Klikněte na toto oznámení a opravte to</string>
+    <string name="manage_account_status_registration_status_title">Stav připojení</string>
+    <string name="settings_developer_clear_orphan_auth_info_title">Vymazat autentizační údaje, které již nejsou spojeny s žádným účtem</string>
+    <string name="settings_calls_change_ringtone_picker_unavailable_toast">Výběr vyzváněcích tónů není k dispozici!</string>
+    <string name="call_conference_end_to_end_encrypted">Koncově šifrováno</string>
 </resources>

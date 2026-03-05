@@ -904,4 +904,6 @@
         <item quantity="one">%s verwaiste Anmeldeinformation entfernt</item>
         <item quantity="other">%s verwaiste Anmeldeinformationen entfernt</item>
     </plurals>
+    <string name="notification_in_call_foreground_service_error_message">Klicken Sie auf diese Benachrichtigung, um das Problem zu beheben</string>
+    <string name="notification_in_call_foreground_service_error_title">Ihr Gesprächspartner hört Sie nicht!</string>
 </resources>
