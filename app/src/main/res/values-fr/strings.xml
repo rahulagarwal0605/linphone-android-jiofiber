@@ -78,6 +78,7 @@
     <string name="notification_account_registration_error_message">Ouvrez &appName; pour rafraîchir la connexion</string>
     <string name="notification_in_call_foreground_service_error_title">Votre correspondant ne vous entend pas !</string>
     <string name="notification_in_call_foreground_service_error_message">Cliquez sur cette notification pour corriger le problème</string>
+    <string name="notification_chat_message_hidden_content">&lt;contenu masqué&gt;</string>
 
     <!-- First screens user see when app is installed and started -->
     <string name="welcome_page_title">Bienvenue</string>
@@ -227,6 +228,7 @@
     <string name="settings_conversations_auto_download_title">Télécharger automatiquement les fichiers</string>
     <string name="settings_conversations_auto_export_media_to_native_gallery_title">Rendre visible dans la galerie les médias téléchargés</string>
     <string name="settings_conversations_mark_as_read_when_dismissing_notif_title">Marquer la conversation comme lue lorsqu\'une notification de message est supprimée</string>
+    <string name="settings_conversations_hide_message_content_in_notif_title">Masquer le contenu du message dans la notification Android</string>
     <string name="settings_contacts_title">Contacts</string>
     <string name="settings_contacts_sort_by_first_name_title">Trier les contacts par</string>
     <string name="settings_contacts_edit_native_contacts_in_linphone_title">Editer les contacts natifs dans &appName;</string>

@@ -221,6 +221,13 @@ class CorePreferences
             config.setBool("app", "make_downloaded_images_public_in_gallery", value)
         }
 
+    @get:AnyThread @set:WorkerThread
+    var hideChatMessageContentInNotification: Boolean
+        get() = config.getBool("ui", "display_notification_content", false)
+        set(value) {
+            config.setBool("ui", "display_notification_content", value)
+        }
+
     // Conference related
 
     @get:AnyThread @set:WorkerThread
