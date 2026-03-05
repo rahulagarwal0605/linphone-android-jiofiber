@@ -133,7 +133,7 @@
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:text="@={viewModel.turnUsername}"
-            android:inputType="text|textPersonName"
+            android:inputType="text|textUri|textNoSuggestions"
             android:hint="@string/account_settings_turn_username_title"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintWidth_max="@dimen/text_input_max_width"
