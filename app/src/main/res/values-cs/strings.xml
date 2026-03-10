@@ -915,4 +915,10 @@
     <string name="settings_developer_clear_orphan_auth_info_title">Vymazat autentizační údaje, které již nejsou spojeny s žádným účtem</string>
     <string name="settings_calls_change_ringtone_picker_unavailable_toast">Výběr vyzváněcích tónů není k dispozici!</string>
     <string name="call_conference_end_to_end_encrypted">Koncově šifrováno</string>
+    <string name="notification_chat_message_hidden_content">&lt;redacted&gt;</string>
+    <string name="settings_conversations_hide_message_content_in_notif_title">Nezobrazovat obsah zprávy v oznámení systému Android</string>
+    <string name="settings_meetings_show_past_meetings_title">Zobrazit minulé schůzky</string>
+    <string name="assistant_dialog_phone_number_validation_not_available_title">Ověření telefonního čísla není k dispozici</string>
+    <string name="assistant_dialog_phone_number_validation_not_available_message">Ověření telefonního čísla není k dispozici, použijte prosím proces vytvoření e-mailového účtu.</string>
+    <string name="assistant_dialog_phone_number_validation_not_available_register_button_label">Registrace s e-mailem</string>
 </resources>

@@ -906,4 +906,8 @@
     </plurals>
     <string name="notification_in_call_foreground_service_error_message">Klicken Sie auf diese Benachrichtigung, um das Problem zu beheben</string>
     <string name="notification_in_call_foreground_service_error_title">Ihr Gesprächspartner hört Sie nicht!</string>
+    <string name="notification_chat_message_hidden_content">&lt;zensiert&gt;</string>
+    <string name="call_conference_end_to_end_encrypted">End-to-End-verschlüsselt</string>
+    <string name="settings_conversations_hide_message_content_in_notif_title">Nachrichteninhalt nicht in Android-Benachrichtigungen anzeigen</string>
+    <string name="settings_meetings_show_past_meetings_title">Vergangene Meetings anzeigen</string>
 </resources>
