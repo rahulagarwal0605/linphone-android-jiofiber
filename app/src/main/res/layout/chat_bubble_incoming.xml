@@ -5,7 +5,6 @@
 
     <data>
         <import type="android.view.View" />
-        <import type="com.google.android.flexbox.JustifyContent" />
         <import type="org.linphone.core.ChatMessage.State" />
         <variable
             name="onLongClickListener"
@@ -179,7 +178,7 @@
                 android:visibility="@{model.filesList.size() >= 2 ? View.VISIBLE : View.GONE, default=gone}"
                 app:alignItems="center"
                 app:flexWrap="wrap"
-                app:justifyContent="@{model.outgoing ? JustifyContent.FLEX_END : JustifyContent.FLEX_START}"
+                app:justifyContent="flex_start"
                 entries="@{model.filesList}"
                 layout="@{@layout/chat_bubble_content_grid_cell}"
                 onLongClick="@{onLongClickListener}"/>

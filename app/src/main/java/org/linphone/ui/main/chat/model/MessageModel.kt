@@ -434,7 +434,9 @@ class MessageModel
 
         val contents = chatMessage.contents
         allFilesDownloaded = true
-        val exactly4Contents = contents.size == 4
+        val exactly4Contents = contents.count {
+            it.isFile || it.isFileTransfer
+        } == 4
 
         for (content in contents) {
             val isFileEncrypted = content.isFileEncrypted
