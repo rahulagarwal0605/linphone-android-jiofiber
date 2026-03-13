@@ -23,7 +23,15 @@ import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import java.net.URLEncoder
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
 import java.util.Locale
+import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
+import javax.xml.parsers.DocumentBuilderFactory
 import org.linphone.LinphoneApplication.Companion.coreContext
 import org.linphone.LinphoneApplication.Companion.corePreferences
 import org.linphone.R
@@ -170,6 +178,16 @@ class ThirdPartySipAccountLoginViewModel
 
     @UiThread
     fun login() {
+        // If JioFiber credentials were prefilled, use direct login for reliable registration
+        val creds = jioFiberCreds
+        if (creds != null) {
+            val sipUser = creds["username"] ?: return
+            val sipPwd = creds["password"] ?: return
+            val sipDomain = creds["domain"] ?: return
+            jioFiberDirectLogin(sipUser, sipPwd, sipDomain)
+            return
+        }
+
         coreContext.postOnCoreThread { core ->
             core.loadConfigFromXml(corePreferences.thirdPartyDefaultValuesPath)
 
@@ -317,5 +335,212 @@ class ThirdPartySipAccountLoginViewModel
     @UiThread
     fun toggleAdvancedSettingsExpand() {
         expandAdvancedSettings.value = expandAdvancedSettings.value == false
+    }
+
+    // Stores provisioned JioFiber credentials for use by login()
+    private var jioFiberCreds: Map<String, String>? = null
+
+    @UiThread
+    fun prefillJioFiberCredentials() {
+        Thread {
+            try {
+                val creds = provisionFromJioFiber()
+                if (creds != null) {
+                    jioFiberCreds = creds
+                    val sipUser = creds["username"] ?: return@Thread
+                    val sipPwd = creds["password"] ?: return@Thread
+                    val sipDomain = creds["domain"] ?: return@Thread
+
+                    // Prefill UI fields
+                    username.postValue("+$sipUser")
+                    authId.postValue(sipUser)
+                    password.postValue(sipPwd)
+                    domain.postValue(sipDomain)
+                    displayName.postValue("JioFiber")
+                    transport.postValue("TLS")
+                    val tlsIndex = availableTransports.indexOf("TLS")
+                    if (tlsIndex >= 0) {
+                        defaultTransportIndexEvent.postValue(Event(tlsIndex))
+                    }
+                    outboundProxy.postValue("sip:192.168.29.1:5068;transport=tls")
+                    Log.i("$TAG JioFiber credentials prefilled, user can tap Login")
+                } else {
+                    Log.w("$TAG JioFiber provisioning returned no credentials")
+                }
+            } catch (e: Exception) {
+                Log.e("$TAG JioFiber provisioning failed: ${e.message}")
+            }
+        }.start()
+    }
+
+    private fun jioFiberDirectLogin(sipUser: String, sipPwd: String, sipDomain: String) {
+        coreContext.postOnCoreThread { core ->
+            core.loadConfigFromXml(corePreferences.thirdPartyDefaultValuesPath)
+
+            val identity = "sip:+$sipUser@$sipDomain"
+            val identityAddress = Factory.instance().createAddress(identity)
+            if (identityAddress == null) {
+                Log.e("$TAG Can't parse [$identity] as Address!")
+                showRedToast(R.string.assistant_login_cant_parse_address_toast, R.drawable.warning_circle)
+                return@postOnCoreThread
+            }
+            identityAddress.displayName = "JioFiber"
+
+            Log.i("$TAG JioFiber direct login: identity=[${identityAddress.asStringUriOnly()}] authUser=[$sipUser]")
+
+            // Auth info: username is the SIP user (+number), userid is the bare number for digest
+            // realm=* to match any challenge realm
+            newlyCreatedAuthInfo = Factory.instance().createAuthInfo(
+                "+$sipUser",    // username (SIP identity user part)
+                sipUser,        // userid (used in digest Authorization username field)
+                sipPwd,         // password
+                null,           // ha1
+                sipDomain,      // realm
+                sipDomain       // domain
+            )
+            core.addAuthInfo(newlyCreatedAuthInfo)
+
+            val accountParams = core.createAccountParams()
+            accountParams.identityAddress = identityAddress
+            accountParams.expires = 300
+
+            // Use outbound proxy directly as registrar
+            val proxyAddress = Factory.instance().createAddress("sip:192.168.29.1:5068;transport=tls")
+            accountParams.serverAddress = proxyAddress
+            accountParams.setRoutesAddresses(arrayOf(proxyAddress))
+            accountParams.isOutboundProxyEnabled = true
+
+            // Disable AVPF (RTCP feedback) — B2BUA rejects rtcp-fb attributes
+            accountParams.avpfMode = org.linphone.core.AVPFMode.Disabled
+            accountParams.avpfRrInterval = 0
+
+            accountParams.isDialEscapePlusEnabled = false
+
+            // Override +sip.instance to use raw UUID format (no urn:uuid: prefix)
+            // UUID must match the MAC used for provisioning
+            val deviceMac = hostnameToMac(android.os.Build.MODEL).replace(":", "")
+            val sipInstanceUuid = "00000000-0000-1000-8000-$deviceMac"
+            Log.i("$TAG Using +sip.instance UUID: $sipInstanceUuid")
+            accountParams.contactParameters = "+sip.instance=\"<$sipInstanceUuid>\""
+
+            val prefix = internationalPrefix.value.orEmpty().trim()
+            val isoCountryCode = internationalPrefixIsoCountryCode.value.orEmpty()
+            if (prefix.isNotEmpty()) {
+                val prefixDigits = if (prefix.startsWith("+")) prefix.substring(1) else prefix
+                if (prefixDigits.isNotEmpty()) {
+                    accountParams.internationalPrefix = prefixDigits
+                    accountParams.internationalPrefixIsoCountryCode = isoCountryCode
+                }
+            }
+
+            newlyCreatedAccount = core.createAccount(accountParams)
+
+            registrationInProgress.postValue(true)
+            core.addListener(coreListener)
+            core.addAccount(newlyCreatedAccount)
+            core.defaultAccount = newlyCreatedAccount
+        }
+    }
+
+    private fun provisionFromJioFiber(): Map<String, String>? {
+        val gatewayIp = "192.168.29.1"
+        val port = 8443
+        val hostname = android.os.Build.MODEL
+        val mac = hostnameToMac(hostname)
+
+        val params = mapOf(
+            "terminal_sw_version" to "RCSAndrd",
+            "terminal_vendor" to hostname,
+            "terminal_model" to hostname,
+            "SMS_port" to "0",
+            "act_type" to "volatile",
+            "IMSI" to "",
+            "msisdn" to "",
+            "IMEI" to "",
+            "vers" to "0",
+            "token" to "",
+            "rcs_state" to "0",
+            "rcs_version" to "5.1B",
+            "rcs_profile" to "joyn_blackbird",
+            "client_vendor" to "JUIC",
+            "default_sms_app" to "2",
+            "default_vvm_app" to "0",
+            "device_type" to "vvm",
+            "client_version" to "JSEAndrd-1.0",
+            "mac_address" to mac,
+            "alias" to hostname,
+            "nwk_intf" to "eth"
+        )
+
+        val query = params.entries.joinToString("&") { (k, v) ->
+            "${URLEncoder.encode(k, "UTF-8")}=${URLEncoder.encode(v, "UTF-8")}"
+        }
+
+        // Trust all certs (JioFiber uses self-signed)
+        val trustAll = arrayOf<TrustManager>(object : X509TrustManager {
+            override fun checkClientTrusted(chain: Array<X509Certificate>?, authType: String?) {}
+
+            override fun checkServerTrusted(chain: Array<X509Certificate>?, authType: String?) {}
+
+            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+        })
+        val sslCtx = SSLContext.getInstance("TLS")
+        sslCtx.init(null, trustAll, SecureRandom())
+
+        val url = java.net.URL("https://$gatewayIp:$port/?$query")
+        val conn = url.openConnection() as HttpsURLConnection
+        conn.sslSocketFactory = sslCtx.socketFactory
+        conn.hostnameVerifier = javax.net.ssl.HostnameVerifier { _, _ -> true }
+        conn.connectTimeout = 10000
+        conn.readTimeout = 10000
+
+        val responseCode = conn.responseCode
+        if (responseCode != 200) {
+            Log.e("$TAG JioFiber provisioning HTTP $responseCode")
+            return null
+        }
+
+        val body = conn.inputStream.bufferedReader().readText()
+        conn.disconnect()
+
+        // Parse XML response
+        val factory = DocumentBuilderFactory.newInstance()
+        val builder = factory.newDocumentBuilder()
+        val doc = builder.parse(body.byteInputStream())
+        val parms = doc.getElementsByTagName("parm")
+
+        val extracted = mutableMapOf<String, String>()
+        for (i in 0 until parms.length) {
+            val node = parms.item(i)
+            val name = node.attributes.getNamedItem("name")?.nodeValue ?: continue
+            val value = node.attributes.getNamedItem("value")?.nodeValue ?: continue
+            extracted[name] = value
+        }
+
+        val sipDomain = extracted["home_network_domain_name"] ?: return null
+        val sipUserRaw = extracted["username"] ?: return null
+        val sipPwd = extracted["userpwd"] ?: return null
+
+        // username may be "user@domain" format — strip domain part
+        val sipUser = if (sipUserRaw.contains("@")) sipUserRaw.split("@")[0] else sipUserRaw
+
+        Log.i("$TAG JioFiber provisioned: user=$sipUser (raw=$sipUserRaw) domain=$sipDomain")
+
+        return mapOf(
+            "username" to sipUser,
+            "password" to sipPwd,
+            "domain" to sipDomain
+        )
+    }
+
+    private fun hostnameToMac(hostname: String): String {
+        var h = 0L
+        for (b in hostname.toByteArray(Charsets.UTF_8)) {
+            h = (h * 33 + (b.toInt() and 0xFF)) and 0xFFFFFFFFL
+        }
+        val hex = String.format("%08X", h)
+        val reversed = hex.chunked(2).reversed().joinToString("")
+        val padded = reversed.lowercase().padStart(12, '0')
+        return padded.chunked(2).joinToString(":")
     }
 }

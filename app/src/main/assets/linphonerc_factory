@@ -10,6 +10,11 @@ force_ice_disablement=0
 
 [rtp]
 accept_any_encryption=1
+rtcp_xr_enabled=0
+rtcp_fb_generic_nack_enabled=0
+rtcp_fb_tmmbr_enabled=0
+no_xmit_on_audio_mute=1
+nortp_timeout=30
 
 [sip]
 guess_hostname=1
@@ -22,6 +27,11 @@ zrtp_key_agreements_suites=MS_ZRTP_KEY_AGREEMENT_K255_MLK512,MS_ZRTP_KEY_AGREEME
 chat_messages_aggregation_delay=1000
 chat_messages_aggregation=1
 update_presence_model_timestamp_before_publish_expires_refresh=1
+verify_server_certs=0
+verify_server_cn=0
+supported=replaces, path, 100rel
+media_encryption=none
+media_encryption_mandatory=0
 
 [sound]
 #remove this property for any application that is not Linphone public version itself
@@ -31,6 +41,31 @@ disable_ringing=0
 [audio]
 android_disable_audio_focus_requests=1
 android_monitor_audio_devices=0
+codec_priority_policy=2
+
+[audio_codec_0]
+mime=PCMU
+rate=8000
+channels=1
+enabled=1
+
+[audio_codec_1]
+mime=PCMA
+rate=8000
+channels=1
+enabled=1
+
+[audio_codec_2]
+mime=telephone-event
+rate=8000
+channels=1
+enabled=1
+
+[audio_codec_3]
+mime=opus
+rate=48000
+channels=2
+enabled=0
 
 [video]
 displaytype=MSAndroidTextureDisplay
@@ -45,7 +80,7 @@ notify_each_friend_individually_when_presence_received=0
 store_friends=0
 
 [app]
-record_aware=1
+record_aware=0
 
 [account_creator]
 url=https://subscribe.linphone.org/api/

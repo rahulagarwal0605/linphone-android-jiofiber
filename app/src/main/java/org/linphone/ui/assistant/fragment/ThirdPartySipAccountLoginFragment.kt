@@ -20,6 +20,8 @@
 package org.linphone.ui.assistant.fragment
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.LinkProperties
 import android.os.Bundle
 import android.telephony.TelephonyManager
 import android.view.LayoutInflater
@@ -159,6 +161,33 @@ class ThirdPartySipAccountLoginFragment : GenericFragment() {
                 viewModel.internationalPrefixIsoCountryCode.postValue(dialPlan.isoCountryCode)
             }
         }
+
+        // Auto-detect JioFiber WiFi and prefill credentials
+        if (isOnJioFiberWifi()) {
+            Log.i("$TAG JioFiber WiFi detected, auto-fetching credentials")
+            viewModel.prefillJioFiberCredentials()
+        }
+    }
+
+    private fun isOnJioFiberWifi(): Boolean {
+        try {
+            val cm = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+                ?: return false
+            val network = cm.activeNetwork ?: return false
+            val linkProps: LinkProperties = cm.getLinkProperties(network) ?: return false
+            for (route in linkProps.routes) {
+                if (route.isDefaultRoute && route.gateway != null) {
+                    val gw = route.gateway?.hostAddress
+                    Log.i("$TAG Detected gateway: $gw")
+                    if (gw == "192.168.29.1") {
+                        return true
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("$TAG Error detecting JioFiber WiFi: ${e.message}")
+        }
+        return false
     }
 
     private fun goBack() {

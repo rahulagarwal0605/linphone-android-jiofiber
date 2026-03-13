@@ -670,6 +670,15 @@ class CoreContext
         Log.i("$TAG Core started, updating configuration if required")
         core.videoCodecPriorityPolicy = CodecPriorityPolicy.Auto
 
+        // Ensure only PSTN codecs are enabled (SDK overrides factory codec config)
+        for (pt in core.audioPayloadTypes) {
+            val mime = pt.mimeType.uppercase()
+            pt.enable(mime == "PCMU" || mime == "PCMA" || mime == "TELEPHONE-EVENT")
+        }
+        for (pt in core.videoPayloadTypes) {
+            pt.enable(false)
+        }
+
         val currentVersion = BuildConfig.VERSION_CODE
         val oldVersion = corePreferences.linphoneConfigurationVersion
         Log.w("$TAG Current configuration version is [$oldVersion]")
@@ -908,6 +917,14 @@ class CoreContext
             return
         }
 
+        // Normalize +91XXXXXXXXXX to 0XXXXXXXXXX for local PSTN dialing
+        val user = address.username ?: ""
+        if (user.startsWith("+91") && user.length == 13) {
+            val localNumber = "0" + user.substring(3)
+            address.username = localNumber
+            Log.i("$TAG JioFiber dial normalization: $user -> $localNumber")
+        }
+
         val currentCall = core.currentCall
         if (currentCall != null) {
             Log.w(
@@ -917,6 +934,12 @@ class CoreContext
         }
 
         val params = callParams ?: core.createCallParams(null)
+        params?.isAvpfEnabled = false
+        params?.mediaEncryption = MediaEncryption.None
+        params?.addCustomSdpMediaAttribute(StreamType.Audio, "ptime", "20")
+        params?.addCustomSdpMediaAttribute(StreamType.Audio, "sendrecv", "")
+        params?.addCustomSdpMediaAttribute(StreamType.Audio, "fmtp", "101 0-16")
+        params?.addCustomSdpAttribute("b", "AS:84")
         if (params == null) {
             val call = core.inviteAddress(address)
             Log.w("$TAG Starting call $call without params")
@@ -1141,12 +1164,8 @@ class CoreContext
         }
         Log.i("$TAG Device name for user-agent is [$deviceName]")
 
-        val appName = context.getString(org.linphone.R.string.app_name)
-        val androidVersion = BuildConfig.VERSION_NAME
-        val userAgent = "${appName}Android/$androidVersion ($deviceName) LinphoneSDK"
-        val sdkVersion = context.getString(R.string.linphone_sdk_version)
-        val sdkBranch = context.getString(R.string.linphone_sdk_branch)
-        val sdkUserAgent = "$sdkVersion ($sdkBranch)"
+        val userAgent = "olinphone JSEAndrd-1.0"
+        val sdkUserAgent = ""
         core.setUserAgent(userAgent, sdkUserAgent)
     }
 
